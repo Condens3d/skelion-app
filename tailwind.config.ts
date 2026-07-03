@@ -16,7 +16,7 @@ export default {
         },
         cyan: { DEFAULT: '#13C7EC' }, // primary accent, CTAs, links
         teal: { DEFAULT: '#2FE6C4' }, // terminal success, secondary accent
-        slate: { DEFAULT: '#848E98' }, // muted text, lifted to WCAG AA on ink family (charter base #5B6772 retained for borders via 'soft')
+        slate: { DEFAULT: '#5B6772' }, // exact brand chart value (Slate). Used for muted text + (via 'soft') borders at 35% alpha
         paper: {
           DEFAULT: '#F8FAFB', // primary text
           dim: '#C4CCD2',
