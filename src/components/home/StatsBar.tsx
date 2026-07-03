@@ -15,7 +15,7 @@ export default function StatsBar() {
         {stats.map((num, idx) => (
           <div key={idx} className="reveal px-[30px] py-11 border-r border-soft last:border-r-0 max-[1024px]:border-b max-[1024px]:border-soft">
             <span className="font-display text-[2.3rem] font-bold text-paper block tracking-[-.02em] leading-tight">{num}</span>
-            <span className="font-mono text-[.76rem] text-slate tracking-[.1em] uppercase">{labels[idx]}</span>
+            <span className="font-mono text-[.76rem] text-paper-dim tracking-[.1em] uppercase">{labels[idx]}</span>
           </div>
         ))}
       </div>

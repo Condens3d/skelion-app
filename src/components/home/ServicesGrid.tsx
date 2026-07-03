@@ -25,7 +25,7 @@ export default function ServicesGrid() {
               className="svc reveal group relative flex flex-col bg-ink-2 border border-soft rounded-panel px-7 py-8 overflow-hidden transition-all duration-[250ms] hover:border-cyan/45 hover:-translate-y-1 hover:bg-ink-3
                 before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-cyan before:to-teal before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100"
             >
-              <div className="font-mono text-[.74rem] text-slate tracking-[.1em] mb-[18px] flex justify-between items-center">
+              <div className="font-mono text-[.74rem] text-paper-dim tracking-[.1em] mb-[18px] flex justify-between items-center">
                 <span>{c.id}</span>
                 <span className="text-teal">{c.path}</span>
               </div>

@@ -28,13 +28,13 @@ export default function Footer() {
           <FootCol title={t('footer.engage')}>
             <FootLink to="/contact">{t('footer.contact')}</FootLink>
             <li>
-              <a href="tel:+237694429113" className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-slate">
+              <a href="tel:+237694429113" className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-paper-dim">
                 {t('footer.call')}
               </a>
             </li>
           </FootCol>
         </div>
-        <div className="border-t border-soft pt-7 flex justify-between items-center gap-4 flex-wrap font-mono text-[.76rem] text-slate">
+        <div className="border-t border-soft pt-7 flex justify-between items-center gap-4 flex-wrap font-mono text-[.76rem] text-paper-dim">
           <span>{t('footer.rights')}</span>
           <span>{t('footer.exit')}</span>
         </div>
@@ -46,7 +46,7 @@ export default function Footer() {
 function FootCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h5 className="font-mono text-[.76rem] text-slate tracking-[.12em] uppercase mb-[18px]">{title}</h5>
+      <h5 className="font-mono text-[.76rem] text-paper-dim tracking-[.12em] uppercase mb-[18px]">{title}</h5>
       <ul className="list-none flex flex-col gap-[11px]">{children}</ul>
     </div>
   );
@@ -55,7 +55,7 @@ function FootCol({ title, children }: { title: string; children: React.ReactNode
 function FootLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <li>
-      <Link to={to} className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-slate">
+      <Link to={to} className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-paper-dim">
         {children}
       </Link>
     </li>

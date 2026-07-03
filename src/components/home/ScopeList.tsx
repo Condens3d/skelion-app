@@ -22,7 +22,7 @@ export default function ScopeList() {
                 key={s.title}
                 className="reveal group grid grid-cols-[64px_1fr] gap-5 items-start py-[22px] border-b border-soft transition-all duration-200 hover:pl-2"
               >
-                <span className="font-mono text-[.86rem] text-slate tracking-[.06em] pt-[3px] transition-colors group-hover:text-cyan">
+                <span className="font-mono text-[.86rem] text-paper-dim tracking-[.06em] pt-[3px] transition-colors group-hover:text-cyan">
                   [{String(i + 1).padStart(2, '0')}]
                 </span>
                 <div>

@@ -19,7 +19,7 @@ type Session = { checking: boolean; email: string | null };
 
 const field =
   'w-full bg-ink border border-soft rounded-brand text-paper font-body text-[.94rem] px-[15px] py-[13px] transition-colors focus:border-cyan focus:outline-none';
-const label = 'font-mono text-[.74rem] text-slate tracking-[.1em] uppercase block mb-[7px]';
+const label = 'font-mono text-[.74rem] text-paper-dim tracking-[.1em] uppercase block mb-[7px]';
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ export default function Admin() {
 
   if (session.checking) {
     return (
-      <div className="pt-[150px] pb-24 wrap font-mono text-slate text-[.9rem]">
+      <div className="pt-[150px] pb-24 wrap font-mono text-paper-dim text-[.9rem]">
         <span className="text-cyan">$</span> whoami <span className="inline-block w-2 h-4 bg-teal align-[-2px] animate-blink-fast" />
       </div>
     );
@@ -148,14 +148,14 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
   return (
     <div className="mt-9">
       <div className="flex justify-between items-center gap-4 flex-wrap mb-6 font-mono text-[.8rem]">
-        <span className="text-slate">
+        <span className="text-paper-dim">
           {t('admin.loggedInAs')}: <span className="text-teal">{email}</span> · {total} {t('admin.total')}
         </span>
         <button onClick={logout} className="btn btn-ghost !py-[9px] !px-[18px] !text-[.8rem]">{t('admin.logout')}</button>
       </div>
       <h2 className="font-display font-semibold text-[1.3rem] mb-5">{t('admin.submissions')}</h2>
       {error && <p className="font-mono text-[.8rem] text-termred mb-4">{error}</p>}
-      {items.length === 0 && !error && <p className="font-mono text-[.85rem] text-slate">{t('admin.empty')}</p>}
+      {items.length === 0 && !error && <p className="font-mono text-[.85rem] text-paper-dim">{t('admin.empty')}</p>}
       <div className="flex flex-col gap-4">
         {items.map((s) => (
           <article key={s.id} className="panel-card p-6 grid grid-cols-[1fr_auto] max-[760px]:grid-cols-1 gap-5">

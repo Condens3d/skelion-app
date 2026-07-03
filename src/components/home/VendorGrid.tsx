@@ -18,10 +18,10 @@ export default function VendorGrid() {
           {vendors.map((v) => (
             <div key={v.name} className="reveal bg-ink-2 border border-soft rounded-panel px-[22px] py-[30px] text-center transition-all duration-[220ms] hover:border-teal/40 hover:-translate-y-[3px]">
               <b className="font-display font-semibold text-[1.12rem] block mb-1.5">{v.name}</b>
-              <span className="font-mono text-[.72rem] text-slate tracking-[.08em] uppercase">{v.cat}</span>
+              <span className="font-mono text-[.72rem] text-paper-dim tracking-[.08em] uppercase">{v.cat}</span>
             </div>
           ))}
-          <div className="reveal bg-ink-2 border border-dashed border-soft rounded-panel px-[22px] py-[30px] text-center text-slate transition-all duration-[220ms] hover:border-teal/40 hover:-translate-y-[3px]">
+          <div className="reveal bg-ink-2 border border-dashed border-soft rounded-panel px-[22px] py-[30px] text-center text-paper-dim transition-all duration-[220ms] hover:border-teal/40 hover:-translate-y-[3px]">
             <b className="font-display font-semibold text-[1.12rem] block mb-1.5 text-cyan">{t('licenses.moreName')}</b>
             <span className="font-mono text-[.72rem] tracking-[.08em] uppercase">{t('licenses.moreCat')}</span>
           </div>

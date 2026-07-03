@@ -13,15 +13,15 @@ export default function NotFound() {
           <span className="w-[11px] h-[11px] rounded-full bg-termred" />
           <span className="w-[11px] h-[11px] rounded-full bg-termamber" />
           <span className="w-[11px] h-[11px] rounded-full bg-termgreen" />
-          <span className="ml-2.5 text-slate text-[.76rem] font-mono">{t('pages.notFound.termTitle')}</span>
+          <span className="ml-2.5 text-paper-dim text-[.76rem] font-mono">{t('pages.notFound.termTitle')}</span>
         </div>
         <div className="px-7 py-[30px] font-mono text-[.9rem] leading-loose">
           <div><span className="text-cyan">$</span> {t('pages.notFound.l1').slice(2)}</div>
-          <div className="text-slate">{t('pages.notFound.l2')}</div>
+          <div className="text-paper-dim">{t('pages.notFound.l2')}</div>
           <div className="text-termred">{t('pages.notFound.l3')}</div>
           <div className="text-termamber">{t('pages.notFound.l4')}</div>
           <h1 className="font-display text-[clamp(2.4rem,7vw,3.6rem)] tracking-[-.03em] my-3.5 mb-1.5 text-paper font-bold">404</h1>
-          <div className="text-slate">{t('pages.notFound.comment')}</div>
+          <div className="text-paper-dim">{t('pages.notFound.comment')}</div>
           <div className="mt-3.5">
             <span className="text-cyan">$</span> {t('pages.notFound.cdHome').slice(2)}{' '}
             <span className="inline-block w-[9px] h-4 bg-teal align-[-2px] animate-blink-fast" aria-hidden="true" />

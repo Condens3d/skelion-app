@@ -44,7 +44,7 @@ export default function Hero() {
             <Link to="/contact" className="btn btn-primary">{t('home.ctaPrimary')}</Link>
             <a href="#services" className="btn btn-ghost">{t('home.ctaGhost')}</a>
           </div>
-          <div className="font-mono text-[.78rem] text-slate flex gap-[18px] flex-wrap">
+          <div className="font-mono text-[.78rem] text-paper-dim flex gap-[18px] flex-wrap">
             {tags.map((tag) => (
               <span key={tag} className="before:content-['#'] before:text-cyan">{tag}</span>
             ))}

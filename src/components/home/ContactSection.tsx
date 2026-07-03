@@ -41,8 +41,8 @@ export default function ContactSection() {
 function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
     <div className="reveal flex gap-4 items-start py-[18px] border-b border-soft">
-      <span className="font-mono text-[.76rem] text-slate w-[90px] shrink-0 tracking-[.08em] pt-[3px] uppercase">{k}</span>
-      <div className="text-[.98rem] text-paper [&_small]:block [&_small]:text-slate [&_small]:text-[.8rem] [&_small]:font-mono [&_small]:mt-0.5">
+      <span className="font-mono text-[.76rem] text-paper-dim w-[90px] shrink-0 tracking-[.08em] pt-[3px] uppercase">{k}</span>
+      <div className="text-[.98rem] text-paper [&_small]:block [&_small]:text-paper-dim [&_small]:text-[.8rem] [&_small]:font-mono [&_small]:mt-0.5">
         {children}
       </div>
     </div>

@@ -39,7 +39,7 @@ export default function ContactForm() {
     }
   }
 
-  const label = 'font-mono text-[.74rem] text-slate tracking-[.1em] uppercase block mb-[7px]';
+  const label = 'font-mono text-[.74rem] text-paper-dim tracking-[.1em] uppercase block mb-[7px]';
   const field =
     'w-full bg-ink border border-soft rounded-brand text-paper font-body text-[.94rem] px-[15px] py-[13px] transition-colors focus:border-cyan focus:outline-none';
 
@@ -88,7 +88,7 @@ export default function ContactForm() {
       {status === 'failed' && (
         <span className="font-mono text-[.78rem] text-termred" role="alert">{t('contact.failed')}</span>
       )}
-      <span className="font-mono text-[.72rem] text-slate">{t('contact.note')}</span>
+      <span className="font-mono text-[.72rem] text-paper-dim">{t('contact.note')}</span>
     </form>
   );
 }
