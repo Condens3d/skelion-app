@@ -16,6 +16,199 @@
     "skip": "Skip to content",
     "langLabel": "Switch language"
   },
+  "home": {
+    "seoTitle": "Skelion Enterprises — Cybersecurity Services, Pentesting, GRC & Licensing",
+    "seoDesc": "Skelion Enterprises delivers offensive security, GRC & ISO certification support, CISO-as-a-Service, cybersecurity training, software licensing and physical security across Africa and beyond.",
+    "eyebrow": "SYSTEMS OPERATIONAL · EN / FR",
+    "h1a": "Secure the enterprise.",
+    "h1b": "Prove",
+    "h1bRest": " the compliance.",
+    "h1c": "Own",
+    "h1cRest": " the outcome.",
+    "lead": "Skelion Enterprises is a full-spectrum cybersecurity partner: offensive security engagements, GRC & ISO certification support, executive security leadership, training, licensed software and physical security — under one roof.",
+    "ctaPrimary": "> request_engagement",
+    "ctaGhost": "cat services.md",
+    "tags": ["Pentesting", "RedTeam", "ISO27001", "CISOaaS", "GRC"],
+    "termTitle": "skelion@ops:~/engagements",
+    "termAria": "Simulated Skelion engagement terminal"
+  },
+  "stats": {
+    "s1n": "6", "s1l": "Service lines",
+    "s2n": "8", "s2plus": "+", "s2l": "Vendor partnerships",
+    "s3n": "EN·FR", "s3l": "Bilingual delivery",
+    "s4n": "360", "s4deg": "°", "s4l": "Offense to governance"
+  },
+  "services": {
+    "cmd": "> cat services.md",
+    "titleA": "One partner. ",
+    "titleAccent": "Six",
+    "titleB": " capabilities.",
+    "sub": "From breaking into your systems (with permission) to certifying that they meet international standards — Skelion covers the full security lifecycle.",
+    "cards": [
+      { "id": "SVC-01", "path": "/offensive", "title": "Pentesting & Red Teaming", "desc": "Adversary-grade offensive engagements across internal & external networks, web, API, cloud and AI systems. Findings your board can act on, not just a scanner export.", "go": "enumerate scope" },
+      { "id": "SVC-02", "path": "/audit", "title": "Security Auditing — GRC & ISO Certification Support", "desc": "Gap assessments, risk management, control design and end-to-end support toward ISO certification. Governance that regulators and clients trust.", "go": "view audit tracks" },
+      { "id": "SVC-03", "path": "/leadership", "title": "CISO-as-a-Service", "desc": "Executive security leadership on demand: strategy, budgets, board reporting, incident oversight and compliance direction — without the full-time cost.", "go": "meet your vCISO" },
+      { "id": "SVC-04", "path": "/training", "title": "Cybersecurity Training", "desc": "From awareness programs for all staff to hands-on offensive and defensive tracks for technical teams. Delivered in English and French, on-site or remote.", "go": "browse tracks" },
+      { "id": "SVC-05", "path": "/licensing", "title": "Software License Reselling", "desc": "Genuine licenses from Microsoft, Kaspersky, Fortinet, Adobe, McAfee, VMware, Norton and more — with sizing advice, volume pricing and renewal management.", "go": "view vendors" },
+      { "id": "SVC-06", "path": "/physical", "title": "Physical Security Devices", "desc": "Access control, video surveillance, intrusion detection and biometric systems — specified, supplied and integrated with your digital security stack.", "go": "see catalog" }
+    ]
+  },
+  "offense": {
+    "cmd": "> ./enumerate_scope.sh --target your_org",
+    "titleA": "Pentesting & ",
+    "titleAccent": "Red Team",
+    "titleB": " engagements",
+    "sub": "We attack the way real adversaries do, then hand you a prioritized, evidence-backed path to fixing what matters. Every engagement follows a strict rules-of-engagement and ends with retesting.",
+    "scopes": [
+      { "title": "External Network", "desc": "Internet-facing perimeter: exposed services, misconfigurations, credential attacks and exploitation paths from the outside in." },
+      { "title": "Internal Network", "desc": "Assumed-breach testing: lateral movement, privilege escalation, Active Directory attack paths and segmentation validation." },
+      { "title": "Web Applications", "desc": "Deep manual testing of business logic, authentication, access control and injection classes — beyond automated scanning." },
+      { "title": "API Security", "desc": "REST, GraphQL and SOAP testing: broken object-level authorization, mass assignment, rate-limit abuse and data exposure." },
+      { "title": "Cloud Security", "desc": "Configuration review and attack simulation across cloud tenants: identity, storage exposure, privilege paths and workload security." },
+      { "title": "AI & LLM Systems", "desc": "Prompt injection, data leakage, model abuse and integration flaws in AI-powered applications — an attack surface most firms don't test yet." },
+      { "title": "Full Red Team", "desc": "Objective-driven, multi-vector campaigns combining technical intrusion and social engineering to test detection and response end to end." }
+    ],
+    "panelKicker": "// ENGAGEMENT DELIVERABLES",
+    "panelTitle": "What you receive",
+    "panelIntro": "Offensive work is only useful if it changes decisions. Every Skelion engagement closes with:",
+    "deliverables": [
+      "Executive summary written for boards and regulators",
+      "Technical findings with proof-of-concept evidence",
+      "Risk-ranked remediation roadmap",
+      "Attack-path narratives showing how findings chain",
+      "Debrief workshop with your technical team",
+      "Complimentary retest of critical findings"
+    ],
+    "panelCta": "> scope_my_test"
+  },
+  "licenses": {
+    "cmd": "> ls licenses/ --authorized",
+    "titleA": "Genuine software, ",
+    "titleAccent": "properly licensed",
+    "sub": "Skelion resells and provisions genuine licenses for leading security and productivity vendors — with honest sizing advice so you buy what you actually need, plus renewal tracking so nothing lapses.",
+    "vendors": [
+      { "name": "Microsoft", "cat": "Productivity · Cloud · Security" },
+      { "name": "Fortinet", "cat": "Network Security" },
+      { "name": "Kaspersky", "cat": "Endpoint Protection" },
+      { "name": "VMware", "cat": "Virtualization" },
+      { "name": "Adobe", "cat": "Creative · Document Cloud" },
+      { "name": "McAfee", "cat": "Endpoint Security" },
+      { "name": "Norton", "cat": "Consumer Security" }
+    ],
+    "moreName": "+ More",
+    "moreCat": "Ask for any vendor",
+    "note": "Volume licensing, education and government pricing, migration support and multi-year renewal management available.",
+    "noteLink": "Request a licensing quote →"
+  },
+  "grc": {
+    "cmd": "> audit --framework iso27001 --mode full",
+    "titleA": "Security Auditing — ",
+    "titleAccent": "GRC",
+    "titleB": " & ISO Certification Support",
+    "sub": "Compliance is not paperwork; it's proof. We audit your security posture against recognized frameworks and walk beside you from gap assessment to certification day.",
+    "trackATag": "Track A — Governance, Risk & Compliance",
+    "trackATitle": "GRC Advisory & Audit",
+    "trackADesc": "Security governance design, risk assessments, policy frameworks, third-party risk, control testing and internal audit support — mapped to the standards your regulators and clients recognize.",
+    "trackAChips": ["ISO 27001", "ISO 22301", "NIST CSF", "COBIT", "Regional banking regulations"],
+    "trackBTag": "Track B — Certification Journey",
+    "trackBTitle": "ISO Certification Support",
+    "trackBDesc": "End-to-end support toward ISO certification: initial gap analysis, ISMS/BCMS design and documentation, control implementation, internal audits, management review preparation and side-by-side support during the certification audit itself.",
+    "trackBChips": ["Gap Analysis", "ISMS Build", "Internal Audit", "Audit-Day Support"],
+    "phases": [
+      { "id": "PHASE_01", "title": "Assess", "desc": "Gap analysis against your target standard and risk profile." },
+      { "id": "PHASE_02", "title": "Design", "desc": "Policies, controls and management systems built for your reality, not a template." },
+      { "id": "PHASE_03", "title": "Implement", "desc": "Hands-on deployment, evidence collection and staff enablement." },
+      { "id": "PHASE_04", "title": "Certify", "desc": "Internal audit, corrective actions and support through the external audit." }
+    ]
+  },
+  "ciso": {
+    "cmd": "> sudo appoint --role ciso --mode fractional",
+    "titleAccent": "CISO",
+    "titleB": "-as-a-Service",
+    "bandTitle": "Executive security leadership, without the executive payroll",
+    "bandDesc": "Most organizations need CISO-level judgment long before they can justify a CISO-level salary. Skelion places a seasoned security executive inside your organization — fractional, retained, or interim — to own strategy, risk and accountability.",
+    "bandCta": "> request_vciso",
+    "bandWatermark": "> CISO --as-a-service",
+    "points": [
+      "Security strategy & multi-year roadmap",
+      "Board & executive committee reporting",
+      "Security budget planning & vendor governance",
+      "Incident response oversight & crisis leadership",
+      "Regulatory & audit liaison",
+      "Team mentoring & hiring support"
+    ]
+  },
+  "training": {
+    "cmd": "> ./train --cohort your_team --lang en,fr",
+    "titleA": "Cybersecurity ",
+    "titleAccent": "Training",
+    "sub": "Humans are your largest attack surface and your best sensor network. We train both ends of the spectrum — from every employee to your most technical defenders.",
+    "lvlFoundation": "Foundation",
+    "lvlTechnical": "Technical",
+    "lvlExecutive": "Executive",
+    "courses": [
+      { "lvl": "foundation", "title": "Security Awareness Programs", "desc": "Phishing simulation, social engineering resilience and secure daily habits for all staff. Measurable behavior change, not tick-box e-learning." },
+      { "lvl": "technical", "title": "Offensive Security Skills", "desc": "Hands-on penetration testing fundamentals, web and network attack techniques for aspiring red teamers and security analysts." },
+      { "lvl": "technical", "title": "Defensive Operations", "desc": "Detection engineering, incident response and hardening workshops for IT and SOC teams who defend production environments." },
+      { "lvl": "foundation", "title": "Secure Development", "desc": "Secure coding practices, OWASP-aligned threat awareness and code review discipline for development teams." },
+      { "lvl": "executive", "title": "Board & Leadership Briefings", "desc": "Cyber risk literacy for directors and executives: obligations, crisis decision-making and asking the right questions." },
+      { "lvl": "technical", "title": "Certification Preparation", "desc": "Structured preparation tracks for internationally recognized security certifications, with labs and mentoring." }
+    ]
+  },
+  "physical": {
+    "cmd": "> scan --layer physical",
+    "titleA": "Physical ",
+    "titleAccent": "Security",
+    "titleB": " Devices",
+    "sub": "A firewall can't stop someone walking through an unlocked door. We supply and integrate physical security systems that close the loop between your digital and physical perimeters.",
+    "items": [
+      { "ico": "⬡", "title": "Access Control", "desc": "Card, PIN and mobile-credential systems with centralized management." },
+      { "ico": "◉", "title": "Video Surveillance", "desc": "IP camera systems, NVRs and monitoring solutions sized to your site." },
+      { "ico": "▲", "title": "Intrusion Detection", "desc": "Alarm systems, sensors and perimeter protection for facilities." },
+      { "ico": "◈", "title": "Biometric Systems", "desc": "Fingerprint and facial recognition for high-assurance zones." }
+    ]
+  },
+  "contact": {
+    "cmd": "> ./engage --priority now",
+    "titleA": "Start the ",
+    "titleAccent": "conversation",
+    "sub": "Tell us what you're protecting and what keeps you up at night. We respond with a scoped, honest proposal — no generic sales decks.",
+    "kPhone": "Phone",
+    "vPhoneNote": "// WhatsApp available",
+    "kWeb": "Web",
+    "kCoverage": "Coverage",
+    "vCoverage": "Cameroon · Central Africa · Remote worldwide",
+    "vCoverageNote": "// on-site & remote delivery",
+    "kLanguages": "Languages",
+    "vLanguages": "English · Français",
+    "kResponse": "Response",
+    "vResponse": "Within one business day",
+    "vResponseNote": "// urgent incidents prioritized",
+    "fName": "Name",
+    "fNamePh": "Jane Doe",
+    "fOrg": "Organization",
+    "fOrgPh": "Company / Institution",
+    "fMail": "Email",
+    "fMailPh": "you@company.com",
+    "fSvc": "Service needed",
+    "svcOptions": [
+      "Pentesting / Red Teaming",
+      "Security Auditing — GRC / ISO Certification Support",
+      "CISO-as-a-Service",
+      "Cybersecurity Training",
+      "Software Licensing",
+      "Physical Security Devices",
+      "Not sure yet — advise me"
+    ],
+    "fMsg": "Message",
+    "fMsgPh": "Briefly describe your environment and objective...",
+    "submit": "> transmit_request",
+    "sending": "> transmitting...",
+    "sent": "> transmitted_ok ✓",
+    "failed": "> transmission_failed — retry or call us",
+    "note": "// your details are used only to respond to this request",
+    "configNotice": "// form endpoint not configured — set VITE_FORM_ENDPOINT before go-live. Call +237 694 429 113 in the meantime."
+  },
   "footer": {
     "blurb": "Full-spectrum cybersecurity: offense, governance, leadership, training, licensing and physical security.",
     "services": "Services",
