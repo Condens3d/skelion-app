@@ -1,11 +1,15 @@
+import { useTranslation } from 'react-i18next';
+import { useSeo } from '../lib/seo';
+import { useReveal } from '../lib/useReveal';
+import ContactSection from '../components/home/ContactSection';
+
 export default function Contact() {
+  const { t } = useTranslation();
+  useSeo({ title: t('pages.contact.seoTitle'), description: t('pages.contact.seoDesc'), path: '/contact' });
+  useReveal();
   return (
-    <section className="pt-40 pb-24">
-      <div className="wrap">
-        <div className="cmd">&gt; loading contact.md</div>
-        <h2 className="h2-display">Contact</h2>
-        <p className="sub">Content lands in the next phase.</p>
-      </div>
-    </section>
+    <div className="pt-[66px]">
+      <ContactSection />
+    </div>
   );
 }
