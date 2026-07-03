@@ -51,6 +51,7 @@ export function createApp(store, config) {
   if (existsSync(dist)) {
     app.use(express.static(dist, {
       index: 'index.html',
+      redirect: false, // no 301 to trailing slash; catch-all serves clean URLs
       setHeaders(res, filePath) {
         if (filePath.includes('/assets/')) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
         else if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
