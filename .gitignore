@@ -5,3 +5,9 @@ playwright-report
 .DS_Store
 *.local
 *.tsbuildinfo
+
+# server runtime
+server/node_modules
+server/data
+server/.env
+.env

@@ -938,5 +938,35 @@
       "cdHome": "$ cd /home",
       "btn": "> return_home"
     }
+  },
+  "admin": {
+    "seoTitle": "Admin — Skelion Enterprises",
+    "cmd": "> sudo ./console --auth required",
+    "title": "Operations console",
+    "loginTitle": "Authenticate",
+    "email": "Email",
+    "password": "Password",
+    "loginBtn": "> authenticate",
+    "loginBusy": "> verifying...",
+    "loginFailed": "// access denied — check credentials",
+    "rateLimited": "// too many attempts — wait 15 minutes",
+    "serverDown": "// console unreachable — is the server running?",
+    "logout": "> logout",
+    "loggedInAs": "session",
+    "submissions": "Contact submissions",
+    "empty": "// no submissions yet",
+    "thName": "Name / Org",
+    "thContact": "Contact",
+    "thService": "Service",
+    "thMessage": "Message",
+    "thReceived": "Received",
+    "thStatus": "Status",
+    "statusNew": "NEW",
+    "statusHandled": "HANDLED",
+    "markHandled": "mark handled",
+    "markNew": "reopen",
+    "del": "delete",
+    "delConfirm": "Delete this submission permanently?",
+    "total": "total"
   }
 }

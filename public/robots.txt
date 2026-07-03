@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /404.html
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://skelionenterprises.com/sitemap.xml

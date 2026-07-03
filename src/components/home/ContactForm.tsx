@@ -4,22 +4,23 @@ import { useTranslation } from 'react-i18next';
 type Status = 'idle' | 'sending' | 'sent' | 'failed';
 
 /**
- * Terminal-styled contact form. Posts to VITE_FORM_ENDPOINT
- * (Formspree / Web3Forms compatible JSON POST).
- * Per CLAUDE.md: never fakes success. If the endpoint is unset,
- * a configuration notice is shown and submission is disabled.
+ * Terminal-styled contact form.
+ * Posts to the built-in API (/api/contact) by default; VITE_FORM_ENDPOINT
+ * overrides it for static-only deployments (Formspree/Web3Forms compatible).
+ * Never fakes success: server errors and unreachable backends surface honestly.
  */
 export default function ContactForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [status, setStatus] = useState<Status>('idle');
-  const endpoint = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
+  const endpoint = (import.meta.env.VITE_FORM_ENDPOINT as string | undefined) || '/api/contact';
   const options = t('contact.svcOptions', { returnObjects: true }) as string[];
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!endpoint || status === 'sending') return;
+    if (status === 'sending') return;
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    data.locale = i18n.resolvedLanguage === 'fr' ? 'fr' : 'en';
     setStatus('sending');
     try {
       const res = await fetch(endpoint, {
@@ -46,7 +47,7 @@ export default function ContactForm() {
     status === 'sending' ? t('contact.sending') : status === 'sent' ? t('contact.sent') : t('contact.submit');
 
   return (
-    <form className="reveal panel-card p-9 flex flex-col gap-[18px]" onSubmit={onSubmit} noValidate={false}>
+    <form className="reveal panel-card p-9 flex flex-col gap-[18px]" onSubmit={onSubmit}>
       <div>
         <label htmlFor="f-name" className={label}>{t('contact.fName')}</label>
         <input id="f-name" name="name" type="text" placeholder={t('contact.fNamePh')} required className={field} />
@@ -71,9 +72,14 @@ export default function ContactForm() {
         <label htmlFor="f-msg" className={label}>{t('contact.fMsg')}</label>
         <textarea id="f-msg" name="message" placeholder={t('contact.fMsgPh')} className={`${field} min-h-[120px] resize-y`} />
       </div>
+      {/* Honeypot: hidden from humans, tempting to bots */}
+      <div className="absolute -left-[9999px] top-0 h-0 overflow-hidden" aria-hidden="true">
+        <label htmlFor="f-web">Website</label>
+        <input id="f-web" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
       <button
         type="submit"
-        disabled={!endpoint || status === 'sending'}
+        disabled={status === 'sending'}
         className="btn btn-primary justify-center disabled:opacity-50 disabled:cursor-not-allowed"
         aria-live="polite"
       >
@@ -81,9 +87,6 @@ export default function ContactForm() {
       </button>
       {status === 'failed' && (
         <span className="font-mono text-[.78rem] text-termred" role="alert">{t('contact.failed')}</span>
-      )}
-      {!endpoint && (
-        <span className="font-mono text-[.72rem] text-termamber" role="note">{t('contact.configNotice')}</span>
       )}
       <span className="font-mono text-[.72rem] text-slate">{t('contact.note')}</span>
     </form>
