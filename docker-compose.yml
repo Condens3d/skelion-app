@@ -1,0 +1,43 @@
+# Skelion full stack: app + PostgreSQL in one command.
+#   docker compose up --build
+# The app image builds the SPA and runs the Node API serving both.
+# Postgres data persists in the named volume; the schema self-provisions on boot.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skelion
+      POSTGRES_USER: skelion_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_in_env}
+    volumes:
+      - skelion_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skelion_app -d skelion"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      # In-cluster connection; TLS not required on the internal docker network.
+      DATABASE_URL: postgresql://skelion_app:${DB_PASSWORD:-change_me_in_env}@db:5432/skelion
+      PGSSL: disable
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      TRUST_PROXY: "1"
+      # First-boot admin seed (comment out after the account exists).
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  skelion_pgdata:

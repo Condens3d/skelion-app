@@ -9,38 +9,22 @@ const ContactSchema = z.object({
   service: z.string().trim().max(200).optional().default(''),
   message: z.string().trim().max(5000).optional().default(''),
   locale: z.enum(['en', 'fr']).optional().default('en'),
-  // Honeypot: real users never fill this hidden field
-  website: z.string().max(0).optional().default(''),
+  website: z.string().max(0).optional().default(''), // honeypot
 });
 
-export function contactRouter(db) {
+export function contactRouter(store) {
   const router = Router();
+  const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, standardHeaders: 'draft-8', legacyHeaders: false, message: { error: 'rate_limited' } });
 
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 5,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    message: { error: 'rate_limited' },
-  });
-
-  const insert = db.prepare(
-    `INSERT INTO submissions (name, organization, email, service, message, locale)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  );
-
-  router.post('/', limiter, (req, res) => {
+  router.post('/', limiter, async (req, res, next) => {
     const parsed = ContactSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ error: 'validation_failed', fields: parsed.error.flatten().fieldErrors });
-    }
+    if (!parsed.success) return res.status(400).json({ error: 'validation_failed', fields: parsed.error.flatten().fieldErrors });
     const d = parsed.data;
-    // Honeypot tripped: pretend success, store nothing
     if (d.website !== '') return res.status(202).json({ ok: true });
-
-    const info = insert.run(d.name, d.organization, d.email, d.service, d.message, d.locale);
-    return res.status(201).json({ ok: true, id: Number(info.lastInsertRowid) });
+    try {
+      const id = await store.createSubmission(d);
+      res.status(201).json({ ok: true, id });
+    } catch (e) { next(e); }
   });
-
   return router;
 }

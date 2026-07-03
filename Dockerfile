@@ -8,7 +8,7 @@ COPY public ./public
 COPY src ./src
 RUN npm run build
 
-# ---------- runtime: Node serves API + static ----------
+# ---------- runtime: Node serves API + static SPA ----------
 FROM node:22-alpine
 ENV NODE_ENV=production
 WORKDIR /app/server
@@ -16,11 +16,11 @@ COPY server/package.json server/package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
 COPY server/src ./src
 COPY --from=build /app/dist /app/dist
-ENV DIST_PATH=/app/dist DATABASE_PATH=/data/skelion.db PORT=8080
-RUN addgroup -S skelion && adduser -S skelion -G skelion \
-  && mkdir -p /data && chown skelion:skelion /data
+# DATABASE_URL (postgres://) is injected at run time (compose / orchestrator).
+# SQLITE_PATH is only a dev fallback and unused when DATABASE_URL is set.
+ENV DIST_PATH=/app/dist PORT=8080
+RUN addgroup -S skelion && adduser -S skelion -G skelion
 USER skelion
-VOLUME /data
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:8080/api/health || exit 1
 CMD ["node", "src/index.js"]
