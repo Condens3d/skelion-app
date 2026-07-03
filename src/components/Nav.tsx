@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { changeLang, type Lang } from '../i18n';
 
 const links = [
   { to: '/pentesting', key: 'pentesting' },
@@ -16,8 +17,8 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
   const lang = i18n.resolvedLanguage === 'fr' ? 'fr' : 'en';
 
-  const switchTo = (lng: 'en' | 'fr') => {
-    void i18n.changeLanguage(lng);
+  const switchTo = (lng: Lang) => {
+    void changeLang(lng);
   };
 
   return (

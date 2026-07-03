@@ -18,8 +18,8 @@ export function createApp(store, config) {
       directives: {
         'default-src': ["'self'"],
         'script-src': ["'self'"],
-        'style-src': ["'self'", 'https://fonts.googleapis.com'],
-        'font-src': ['https://fonts.gstatic.com'],
+        'style-src': ["'self'"],
+        'font-src': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'connect-src': ["'self'"],
         'frame-ancestors': ["'none'"],
@@ -60,6 +60,11 @@ export function createApp(store, config) {
     app.get('*', (req, res) => {
       if (extname(req.path)) return res.status(404).end();
       res.setHeader('Cache-Control', 'no-cache');
+      // Serve the prerendered per-route shell (baked SEO meta) when it exists,
+      // otherwise fall back to the root shell.
+      const clean = req.path.replace(/\/+$/, '');
+      const candidate = resolve(dist, '.' + clean, 'index.html');
+      if (clean && existsSync(candidate)) return res.sendFile(candidate);
       res.sendFile(resolve(dist, 'index.html'));
     });
   }
