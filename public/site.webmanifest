@@ -1,0 +1,10 @@
+{
+  "name": "Skelion Enterprises",
+  "short_name": "Skelion",
+  "description": "Full-spectrum cybersecurity: pentesting, GRC & ISO support, CISO-as-a-Service, training, licensing, physical security.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0E1318",
+  "theme_color": "#0E1318",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

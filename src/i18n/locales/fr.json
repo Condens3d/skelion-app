@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "suffix": "Skelion Enterprises"
+  },
+  "nav": {
+    "services": "services",
+    "pentesting": "pentest",
+    "licenses": "licences",
+    "grc": "grc_iso",
+    "ciso": "ciso-aas",
+    "training": "formation",
+    "physical": "physique",
+    "engage": "./engager",
+    "menu": "MENU",
+    "menuLabel": "Afficher le menu",
+    "skip": "Aller au contenu",
+    "langLabel": "Changer de langue"
+  },
+  "footer": {
+    "blurb": "Cybersécurité à spectre complet : offensive, gouvernance, leadership, formation, licences et sécurité physique.",
+    "services": "Services",
+    "more": "Plus",
+    "engage": "Contact",
+    "pentest": "Pentest & Red Team",
+    "grc": "GRC & Accompagnement ISO",
+    "ciso": "CISO-as-a-Service",
+    "training": "Formation",
+    "licensing": "Licences",
+    "physical": "Sécurité physique",
+    "contact": "Nous contacter",
+    "call": "Appelez-nous",
+    "rights": "© 2026 Skelion Enterprises. Tous droits réservés.",
+    "exit": "secure_the_enterprise.sh — exit 0"
+  }
+}
