@@ -10,7 +10,7 @@
     "ciso": "ciso-aas",
     "training": "formation",
     "physical": "physique",
-    "engage": "./engager",
+    "engage": "Nous contacter",
     "menu": "MENU",
     "menuLabel": "Afficher le menu",
     "skip": "Aller au contenu",
@@ -18,7 +18,7 @@
     "insights": "Analyses"
   },
   "home": {
-    "seoTitle": "Skelion Enterprises — Cybersécurité, Tests d'intrusion, GRC & Licences",
+    "seoTitle": "Skelion Enterprises | Cybersécurité, Tests d'intrusion, GRC & Licences",
     "seoDesc": "Skelion Enterprises fournit sécurité offensive, accompagnement GRC & certification ISO, CISO-as-a-Service, formation en cybersécurité, licences logicielles et sécurité physique en Afrique et au-delà.",
     "eyebrow": "SYSTÈMES OPÉRATIONNELS · FR / EN",
     "h1a": "Sécurisez l'entreprise.",
@@ -26,9 +26,9 @@
     "h1bRest": " la conformité.",
     "h1c": "Maîtrisez",
     "h1cRest": " le résultat.",
-    "lead": "Skelion Enterprises est un partenaire cybersécurité à spectre complet : missions de sécurité offensive, accompagnement GRC & certification ISO, leadership sécurité exécutif, formation, logiciels sous licence et sécurité physique — sous un même toit.",
-    "ctaPrimary": "> demander_mission",
-    "ctaGhost": "cat services.md",
+    "lead": "Skelion Enterprises est un partenaire cybersécurité à spectre complet : missions de sécurité offensive, accompagnement GRC & certification ISO, leadership sécurité exécutif, formation, logiciels sous licence et sécurité physique, sous un même toit.",
+    "ctaPrimary": "Demander une mission",
+    "ctaGhost": "Voir les services",
     "tags": [
       "Pentesting",
       "RedTeam",
@@ -57,11 +57,11 @@
     "s4l": "De l'offensive à la gouvernance"
   },
   "services": {
-    "cmd": "> cat services.md",
+    "cmd": "> nos services",
     "titleA": "Un partenaire. ",
     "titleAccent": "Six",
     "titleB": " capacités.",
-    "sub": "De l'intrusion dans vos systèmes (avec autorisation) à la certification de leur conformité aux standards internationaux — Skelion couvre tout le cycle de vie de la sécurité.",
+    "sub": "De l'intrusion dans vos systèmes (avec autorisation) à la certification de leur conformité aux standards internationaux, Skelion couvre tout le cycle de vie de la sécurité.",
     "cards": [
       {
         "id": "SVC-01",
@@ -73,7 +73,7 @@
       {
         "id": "SVC-02",
         "path": "/audit",
-        "title": "Audit de sécurité — GRC & Accompagnement à la certification ISO",
+        "title": "Audit de sécurité, GRC & Accompagnement à la certification ISO",
         "desc": "Analyses d'écarts, gestion des risques, conception de contrôles et accompagnement de bout en bout vers la certification ISO. Une gouvernance qui inspire confiance aux régulateurs et aux clients.",
         "go": "voir les volets d'audit"
       },
@@ -81,7 +81,7 @@
         "id": "SVC-03",
         "path": "/leadership",
         "title": "CISO-as-a-Service",
-        "desc": "Leadership sécurité exécutif à la demande : stratégie, budgets, reporting au conseil, supervision des incidents et pilotage de la conformité — sans le coût d'un poste à temps plein.",
+        "desc": "Leadership sécurité exécutif à la demande : stratégie, budgets, reporting au conseil, supervision des incidents et pilotage de la conformité, sans le coût d'un poste à temps plein.",
         "go": "rencontrer votre vCISO"
       },
       {
@@ -95,20 +95,20 @@
         "id": "SVC-05",
         "path": "/licensing",
         "title": "Revente de licences logicielles",
-        "desc": "Licences authentiques Microsoft, Kaspersky, Fortinet, Adobe, McAfee, VMware, Norton et plus — avec conseil de dimensionnement, tarifs volume et gestion des renouvellements.",
+        "desc": "Licences authentiques Microsoft, Kaspersky, Fortinet, Adobe, McAfee, VMware, Norton et plus, avec conseil de dimensionnement, tarifs volume et gestion des renouvellements.",
         "go": "voir les éditeurs"
       },
       {
         "id": "SVC-06",
         "path": "/physical",
         "title": "Dispositifs de sécurité physique",
-        "desc": "Contrôle d'accès, vidéosurveillance, détection d'intrusion et systèmes biométriques — spécifiés, fournis et intégrés à votre dispositif de sécurité numérique.",
+        "desc": "Contrôle d'accès, vidéosurveillance, détection d'intrusion et systèmes biométriques, spécifiés, fournis et intégrés à votre dispositif de sécurité numérique.",
         "go": "voir le catalogue"
       }
     ]
   },
   "offense": {
-    "cmd": "> ./enumerate_scope.sh --target votre_org",
+    "cmd": "> sécurité offensive",
     "titleA": "Tests d'intrusion & missions ",
     "titleAccent": "Red Team",
     "titleB": "",
@@ -124,7 +124,7 @@
       },
       {
         "title": "Applications web",
-        "desc": "Tests manuels approfondis de la logique métier, de l'authentification, du contrôle d'accès et des classes d'injection — bien au-delà du scan automatisé."
+        "desc": "Tests manuels approfondis de la logique métier, de l'authentification, du contrôle d'accès et des classes d'injection, bien au-delà du scan automatisé."
       },
       {
         "title": "Sécurité des API",
@@ -136,7 +136,7 @@
       },
       {
         "title": "Systèmes IA & LLM",
-        "desc": "Injection de prompts, fuite de données, détournement de modèles et failles d'intégration dans les applications dopées à l'IA — une surface d'attaque encore rarement testée."
+        "desc": "Injection de prompts, fuite de données, détournement de modèles et failles d'intégration dans les applications dopées à l'IA, une surface d'attaque encore rarement testée."
       },
       {
         "title": "Red Team complet",
@@ -154,13 +154,13 @@
       "Atelier de restitution avec votre équipe technique",
       "Re-test gratuit des constats critiques"
     ],
-    "panelCta": "> cadrer_mon_test"
+    "panelCta": "Cadrer mon test"
   },
   "licenses": {
-    "cmd": "> ls licenses/ --authorized",
+    "cmd": "> licences autorisées",
     "titleA": "Des logiciels authentiques, ",
     "titleAccent": "correctement licenciés",
-    "sub": "Skelion revend et provisionne des licences authentiques des principaux éditeurs de sécurité et de productivité — avec un conseil de dimensionnement honnête pour n'acheter que ce dont vous avez besoin, et un suivi des renouvellements pour que rien n'expire.",
+    "sub": "Skelion revend et provisionne des licences authentiques des principaux éditeurs de sécurité et de productivité, avec un conseil de dimensionnement honnête pour n'acheter que ce dont vous avez besoin, et un suivi des renouvellements pour que rien n'expire.",
     "vendors": [
       {
         "name": "Microsoft",
@@ -197,14 +197,14 @@
     "noteLink": "Demander un devis licences →"
   },
   "grc": {
-    "cmd": "> audit --framework iso27001 --mode full",
-    "titleA": "Audit de sécurité — ",
+    "cmd": "> gouvernance & conformité",
+    "titleA": "Audit de sécurité, ",
     "titleAccent": "GRC",
     "titleB": " & Certification ISO",
     "sub": "La conformité n'est pas de la paperasse ; c'est une preuve. Nous auditons votre posture de sécurité au regard des référentiels reconnus et vous accompagnons de l'analyse d'écarts jusqu'au jour de la certification.",
-    "trackATag": "Volet A — Gouvernance, Risques & Conformité",
+    "trackATag": "Volet A: Gouvernance, Risques & Conformité",
     "trackATitle": "Conseil GRC & Audit",
-    "trackADesc": "Conception de la gouvernance sécurité, analyses de risques, référentiels de politiques, risque tiers, tests de contrôles et appui à l'audit interne — alignés sur les standards reconnus par vos régulateurs et vos clients.",
+    "trackADesc": "Conception de la gouvernance sécurité, analyses de risques, référentiels de politiques, risque tiers, tests de contrôles et appui à l'audit interne, alignés sur les standards reconnus par vos régulateurs et vos clients.",
     "trackAChips": [
       "ISO 27001",
       "ISO 22301",
@@ -212,7 +212,7 @@
       "COBIT",
       "Réglementations bancaires régionales"
     ],
-    "trackBTag": "Volet B — Parcours de certification",
+    "trackBTag": "Volet B: Parcours de certification",
     "trackBTitle": "Accompagnement à la certification ISO",
     "trackBDesc": "Accompagnement de bout en bout vers la certification ISO : analyse d'écarts initiale, conception et documentation du SMSI/SMCA, mise en œuvre des contrôles, audits internes, préparation de la revue de direction et présence à vos côtés pendant l'audit de certification.",
     "trackBChips": [
@@ -245,13 +245,13 @@
     ]
   },
   "ciso": {
-    "cmd": "> sudo appoint --role ciso --mode fractional",
+    "cmd": "> leadership sécurité",
     "titleAccent": "CISO",
     "titleB": "-as-a-Service",
     "bandTitle": "Un leadership sécurité exécutif, sans la masse salariale d'un exécutif",
-    "bandDesc": "La plupart des organisations ont besoin d'un jugement de niveau CISO bien avant de pouvoir justifier un salaire de CISO. Skelion place un dirigeant sécurité expérimenté au sein de votre organisation — à temps partagé, au forfait ou par intérim — pour porter la stratégie, le risque et la responsabilité.",
-    "bandCta": "> demander_vciso",
-    "bandWatermark": "> CISO --as-a-service",
+    "bandDesc": "La plupart des organisations ont besoin d'un jugement de niveau CISO bien avant de pouvoir justifier un salaire de CISO. Skelion place un dirigeant sécurité expérimenté au sein de votre organisation, à temps partagé, au forfait ou par intérim, pour porter la stratégie, le risque et la responsabilité.",
+    "bandCta": "Demander un vCISO",
+    "bandWatermark": "CISO à la demande",
     "points": [
       "Stratégie sécurité & feuille de route pluriannuelle",
       "Reporting au conseil & au comité exécutif",
@@ -262,10 +262,10 @@
     ]
   },
   "training": {
-    "cmd": "> ./train --cohort votre_equipe --lang fr,en",
+    "cmd": "> formation sécurité",
     "titleA": "Formation en ",
     "titleAccent": "cybersécurité",
-    "sub": "L'humain est à la fois votre plus grande surface d'attaque et votre meilleur réseau de capteurs. Nous formons les deux extrémités du spectre — de chaque collaborateur à vos défenseurs les plus techniques.",
+    "sub": "L'humain est à la fois votre plus grande surface d'attaque et votre meilleur réseau de capteurs. Nous formons les deux extrémités du spectre, de chaque collaborateur à vos défenseurs les plus techniques.",
     "lvlFoundation": "Fondamentaux",
     "lvlTechnical": "Technique",
     "lvlExecutive": "Exécutif",
@@ -303,7 +303,7 @@
     ]
   },
   "physical": {
-    "cmd": "> scan --layer physical",
+    "cmd": "> sécurité physique",
     "titleA": "Dispositifs de ",
     "titleAccent": "sécurité physique",
     "titleB": "",
@@ -332,10 +332,10 @@
     ]
   },
   "contact": {
-    "cmd": "> ./engage --priority now",
+    "cmd": "> nous contacter",
     "titleA": "Engageons la ",
     "titleAccent": "conversation",
-    "sub": "Dites-nous ce que vous protégez et ce qui vous empêche de dormir. Nous répondons par une proposition cadrée et honnête — pas de plaquette commerciale générique.",
+    "sub": "Dites-nous ce que vous protégez et ce qui vous empêche de dormir. Nous répondons par une proposition cadrée et honnête, pas de plaquette commerciale générique.",
     "kPhone": "Téléphone",
     "vPhoneNote": "// disponible sur WhatsApp",
     "kWeb": "Web",
@@ -356,21 +356,21 @@
     "fSvc": "Service souhaité",
     "svcOptions": [
       "Tests d'intrusion / Red Teaming",
-      "Audit de sécurité — GRC / Certification ISO",
+      "Audit de sécurité, GRC / Certification ISO",
       "CISO-as-a-Service",
       "Formation en cybersécurité",
       "Licences logicielles",
       "Dispositifs de sécurité physique",
-      "Pas encore sûr — conseillez-moi"
+      "Pas encore sûr, conseillez-moi"
     ],
     "fMsg": "Message",
     "fMsgPh": "Décrivez brièvement votre environnement et votre objectif...",
-    "submit": "> transmettre_demande",
-    "sending": "> transmission...",
-    "sent": "> transmission_ok ✓",
-    "failed": "> echec_transmission — réessayez ou appelez-nous",
+    "submit": "Envoyer la demande",
+    "sending": "Envoi...",
+    "sent": "Envoyé ✓",
+    "failed": "> echec_transmission, réessayez ou appelez-nous",
     "note": "// vos informations ne servent qu'à répondre à cette demande",
-    "configNotice": "// endpoint du formulaire non configuré — définissez VITE_FORM_ENDPOINT avant la mise en ligne. En attendant, appelez le +237 694 429 113."
+    "configNotice": ""
   },
   "footer": {
     "blurb": "Cybersécurité à spectre complet : offensive, gouvernance, leadership, formation, licences et sécurité physique.",
@@ -386,7 +386,7 @@
     "contact": "Nous contacter",
     "call": "Appelez-nous",
     "rights": "© 2026 Skelion Enterprises. Tous droits réservés.",
-    "exit": "secure_the_enterprise.sh — exit 0",
+    "exit": "// entreprise sécurisée",
     "company": "Entreprise",
     "about": "À propos",
     "faq": "FAQ",
@@ -394,14 +394,14 @@
   },
   "pages": {
     "pentesting": {
-      "seoTitle": "Tests d'intrusion & Red Teaming — Skelion Enterprises",
-      "seoDesc": "Tests d'intrusion et missions Red Team de niveau adversaire : externe, interne, web, API, cloud, IA/LLM et Red Team complet — avec rapports étayés par des preuves et re-test.",
-      "cmd": "> ./enumerate_scope.sh --list-modules",
+      "seoTitle": "Tests d'intrusion & Red Teaming | Skelion Enterprises",
+      "seoDesc": "Tests d'intrusion et missions Red Team de niveau adversaire : externe, interne, web, API, cloud, IA/LLM et Red Team complet, avec rapports étayés par des preuves et re-test.",
+      "cmd": "> tests d'intrusion",
       "titleA": "L'offensive, conduite ",
       "titleAccent": "en ingénieurs",
-      "sub": "Un scan de vulnérabilités vous dit ce qu'un robot a trouvé. Une mission Skelion vous dit ce qu'un adversaire motivé ferait réellement — et comment l'arrêter, précisément. Des opérateurs seniors, des règles d'engagement strictes, des constats qui résistent à l'examen du conseil.",
+      "sub": "Un scan de vulnérabilités vous dit ce qu'un robot a trouvé. Une mission Skelion vous dit ce qu'un adversaire motivé ferait réellement, et comment l'arrêter, précisément. Des opérateurs seniors, des règles d'engagement strictes, des constats qui résistent à l'examen du conseil.",
       "methodTitle": "Déroulement d'une mission",
-      "methodCmd": "> cat methodologie.md",
+      "methodCmd": "> notre méthodologie",
       "method": [
         {
           "id": "STEP_01",
@@ -416,7 +416,7 @@
         {
           "id": "STEP_03",
           "title": "Exploitation contrôlée",
-          "desc": "Les vulnérabilités sont validées par une exploitation maîtrisée — prouvant l'impact réel tout en protégeant la stabilité de la production et vos données."
+          "desc": "Les vulnérabilités sont validées par une exploitation maîtrisée, prouvant l'impact réel tout en protégeant la stabilité de la production et vos données."
         },
         {
           "id": "STEP_04",
@@ -435,7 +435,7 @@
         }
       ],
       "scopesTitle": "Périmètres de test",
-      "scopesCmd": "> ls scopes/ -la",
+      "scopesCmd": "> périmètres d'intervention",
       "scopes": [
         {
           "path": "/externe",
@@ -510,7 +510,7 @@
       ],
       "customPath": "/sur-mesure",
       "customTitle": "Un autre besoin en tête ?",
-      "customDesc": "Périmètres hybrides, scénarios sectoriels ou environnement atypique — décrivez-le et nous le cadrerons honnêtement.",
+      "customDesc": "Périmètres hybrides, scénarios sectoriels ou environnement atypique, décrivez-le et nous le cadrerons honnêtement.",
       "customLink": "définir un périmètre sur mesure →",
       "roeTitle": "Nos engagements sur chaque mission",
       "roeKicker": "// RÈGLES D'ENGAGEMENT",
@@ -520,24 +520,24 @@
         "Pratiques d'exploitation sûres protégeant production et données",
         "Canal d'escalade direct avec votre équipe pendant toute la mission",
         "Traitement confidentiel et destruction sécurisée des données de mission",
-        "Une preuve pour chaque constat — aucune affirmation invérifiable"
+        "Une preuve pour chaque constat, aucune affirmation invérifiable"
       ],
       "termTitle": "skelion@ops:~/engagement",
       "termLines": "pentest",
       "ctaTitle": "Prêt à voir ce que voit un adversaire ?",
-      "ctaDesc": "Dites-nous ce qu'il faut tester et nous répondons par une proposition cadrée — liste de cibles, méthodologie, calendrier et prix ferme.",
-      "cta": "> cadrer_mon_test"
+      "ctaDesc": "Dites-nous ce qu'il faut tester et nous répondons par une proposition cadrée, liste de cibles, méthodologie, calendrier et prix ferme.",
+      "cta": "Cadrer mon test"
     },
     "grc": {
-      "seoTitle": "Audit de sécurité, GRC & Certification ISO — Skelion Enterprises",
-      "seoDesc": "Analyses d'écarts, gestion des risques, accompagnement aux certifications ISO 27001 et ISO 22301, alignement NIST CSF et COBIT — de la première évaluation au jour de la certification.",
-      "cmd": "> audit --framework iso27001 --mode deep",
+      "seoTitle": "Audit de sécurité, GRC & Certification ISO | Skelion Enterprises",
+      "seoDesc": "Analyses d'écarts, gestion des risques, accompagnement aux certifications ISO 27001 et ISO 22301, alignement NIST CSF et COBIT, de la première évaluation au jour de la certification.",
+      "cmd": "> gouvernance & conformité",
       "titleA": "Une gouvernance qui ",
       "titleAccent": "tient",
       "titleB": " face à l'audit",
       "sub": "Les référentiels ne protègent pas les organisations ; une mise en œuvre disciplinée, si. Nous auditons honnêtement, concevons des contrôles adaptés à votre réalité et restons à vos côtés jusqu'à ce que le certificat soit au mur.",
       "tracksTitle": "Deux façons de travailler ensemble",
-      "trackATag": "Volet A — Conseil & Audit",
+      "trackATag": "Volet A: Conseil & Audit",
       "trackATitle": "Conseil GRC & Audit de sécurité",
       "trackADesc": "Pour les organisations qui veulent comprendre et améliorer leur posture : conception de la gouvernance, analyse de risques, référentiels de politiques, risque tiers et tests de contrôles alignés sur les standards reconnus par vos régulateurs.",
       "trackAPoints": [
@@ -548,7 +548,7 @@
         "Tests de contrôles & appui à l'audit interne",
         "Revues de préparation réglementaire"
       ],
-      "trackBTag": "Volet B — Parcours de certification",
+      "trackBTag": "Volet B: Parcours de certification",
       "trackBTitle": "Accompagnement à la certification ISO",
       "trackBDesc": "Pour les organisations engagées vers la certification : nous conduisons le parcours complet, de l'analyse d'écarts à l'appui le jour de l'audit, en construisant un système de management que votre équipe saura réellement faire vivre après notre départ.",
       "trackBPoints": [
@@ -560,7 +560,7 @@
         "Présence à vos côtés pendant l'audit de certification"
       ],
       "journeyTitle": "Le parcours de certification",
-      "journeyCmd": "> cat parcours.md",
+      "journeyCmd": "> parcours de certification",
       "phases": [
         {
           "id": "PHASE_01",
@@ -571,7 +571,7 @@
         {
           "id": "PHASE_02",
           "title": "Concevoir",
-          "desc": "Politiques, contrôles, méthodologie de risque et le système de management lui-même — conçus autour du fonctionnement réel de votre organisation, pas d'un pack de modèles copiés-collés.",
+          "desc": "Politiques, contrôles, méthodologie de risque et le système de management lui-même, conçus autour du fonctionnement réel de votre organisation, pas d'un pack de modèles copiés-collés.",
           "out": "Livrable : documentation SMSI/SMCA"
         },
         {
@@ -606,25 +606,25 @@
           "cat": "Gouvernance IT"
         }
       ],
-      "frameworksNote": "Également : réglementations bancaires régionales et exigences sectorielles — décrivez votre contexte réglementaire et nous nous y alignons.",
+      "frameworksNote": "Également : réglementations bancaires régionales et exigences sectorielles, décrivez votre contexte réglementaire et nous nous y alignons.",
       "ctaTitle": "Sachez exactement où vous en êtes",
-      "ctaDesc": "Commencez par une analyse d'écarts. Vous obtenez une lecture honnête de votre posture et un chemin réaliste vers la certification — calendrier, effort et priorités.",
-      "cta": "> demander_analyse_ecarts"
+      "ctaDesc": "Commencez par une analyse d'écarts. Vous obtenez une lecture honnête de votre posture et un chemin réaliste vers la certification, calendrier, effort et priorités.",
+      "cta": "Demander une analyse d'écarts"
     },
     "ciso": {
-      "seoTitle": "CISO-as-a-Service — Skelion Enterprises",
+      "seoTitle": "CISO-as-a-Service | Skelion Enterprises",
       "seoDesc": "Leadership sécurité à temps partagé, au forfait ou par intérim : stratégie, reporting au conseil, budgets, supervision des incidents et pilotage de la conformité sans le coût d'un exécutif à temps plein.",
-      "cmd": "> sudo appoint --role ciso",
+      "cmd": "> leadership sécurité",
       "titleA": "Le leadership sécurité, ",
       "titleAccent": "à la demande",
-      "sub": "Les outils ne fixent pas de stratégie. Les référentiels ne défendent pas un budget. Quelqu'un doit porter la sécurité à la table de direction — et la plupart des organisations ont besoin de ce jugement bien avant de pouvoir en justifier le salaire. C'est ce vide que nous comblons.",
+      "sub": "Les outils ne fixent pas de stratégie. Les référentiels ne défendent pas un budget. Quelqu'un doit porter la sécurité à la table de direction, et la plupart des organisations ont besoin de ce jugement bien avant de pouvoir en justifier le salaire. C'est ce vide que nous comblons.",
       "modelsTitle": "Modèles d'engagement",
-      "modelsCmd": "> ls models/ --available",
+      "modelsCmd": "> modèles d'intervention",
       "models": [
         {
           "tag": "MODE_01",
           "title": "CISO à temps partagé",
-          "desc": "Une part définie de la semaine d'un dirigeant sécurité senior, chaque semaine. Une prise en charge continue de la stratégie, du risque et de la gouvernance — calibrée au stade de votre organisation.",
+          "desc": "Une part définie de la semaine d'un dirigeant sécurité senior, chaque semaine. Une prise en charge continue de la stratégie, du risque et de la gouvernance, calibrée au stade de votre organisation.",
           "fit": "Pour : les organisations en croissance qui ont besoin d'un leadership permanent sans poste à temps plein."
         },
         {
@@ -653,7 +653,7 @@
         "Gestion des acceptations de risque & des dérogations"
       ],
       "firstTitle": "Les 90 premiers jours",
-      "firstCmd": "> cat onboarding.md",
+      "firstCmd": "> comment nous démarrons",
       "first": [
         {
           "id": "JOURS_01-30",
@@ -663,7 +663,7 @@
         {
           "id": "JOURS_31-60",
           "title": "Prioriser",
-          "desc": "Registre des risques, feuille de route sécurité et vision budgétaire — séquencés par impact métier, pas par le marketing des éditeurs."
+          "desc": "Registre des risques, feuille de route sécurité et vision budgétaire, séquencés par impact métier, pas par le marketing des éditeurs."
         },
         {
           "id": "JOURS_61-90",
@@ -672,18 +672,18 @@
         }
       ],
       "ctaTitle": "Installez un CISO à votre table",
-      "ctaDesc": "Parlez-nous de votre organisation et de la pression que vous subissez. Nous proposons le modèle, la cadence et les priorités qui conviennent — honnêtement, y compris si vous n'avez pas besoin de nous.",
-      "cta": "> demander_vciso"
+      "ctaDesc": "Parlez-nous de votre organisation et de la pression que vous subissez. Nous proposons le modèle, la cadence et les priorités qui conviennent, honnêtement, y compris si vous n'avez pas besoin de nous.",
+      "cta": "Demander un vCISO"
     },
     "training": {
-      "seoTitle": "Formation en cybersécurité — Skelion Enterprises",
-      "seoDesc": "Sensibilisation à la sécurité, compétences offensives et défensives, développement sécurisé, briefings exécutifs et préparation aux certifications — en français et en anglais, sur site ou à distance.",
-      "cmd": "> ./train --list-tracks",
+      "seoTitle": "Formation en cybersécurité | Skelion Enterprises",
+      "seoDesc": "Sensibilisation à la sécurité, compétences offensives et défensives, développement sécurisé, briefings exécutifs et préparation aux certifications, en français et en anglais, sur site ou à distance.",
+      "cmd": "> formation sécurité",
       "titleA": "Une formation qui change les ",
       "titleAccent": "comportements",
-      "sub": "Les diapositives n'arrêtent pas le phishing. La pratique, si. Chaque parcours Skelion est construit autour du faire — simulations, labs, exercices et décisions — parce que c'est ce qui reste sous pression.",
+      "sub": "Les diapositives n'arrêtent pas le phishing, la pratique, si. Chaque parcours Skelion est construit autour de la pratique : simulations, ateliers, exercices et décisions, parce que c'est ce qui tient sous la pression.",
       "tracksTitle": "Parcours de formation",
-      "tracksCmd": "> cat tracks.md",
+      "tracksCmd": "> parcours de formation",
       "tracks": [
         {
           "lvl": "foundation",
@@ -711,7 +711,7 @@
           "lvl": "technical",
           "title": "Opérations défensives",
           "aud": "Public : équipes IT & SOC",
-          "desc": "Ingénierie de détection, réponse à incident et ateliers de durcissement pour les équipes qui défendent la production — construits autour de scénarios d'attaque réalistes.",
+          "desc": "Ingénierie de détection, réponse à incident et ateliers de durcissement pour les équipes qui défendent la production, construits autour de scénarios d'attaque réalistes.",
           "points": [
             "Exercices de détection & réponse",
             "Ateliers de durcissement",
@@ -755,7 +755,7 @@
       "deliveryTitle": "Notre façon de délivrer",
       "deliveryKicker": "// FORMATS",
       "delivery": [
-        "Français et anglais — la même qualité dans les deux langues",
+        "Français et anglais, la même qualité dans les deux langues",
         "Sur site dans vos locaux ou entièrement à distance",
         "Programmes en cohorte, ateliers intensifs ou sessions récurrentes",
         "Contenus adaptés à votre secteur et à votre environnement réel",
@@ -764,15 +764,15 @@
       ],
       "ctaTitle": "Construisez votre pare-feu humain",
       "ctaDesc": "Dites-nous qui doit être formé et quel résultat vous visez. Nous concevons le parcours, le format et la mesure autour de votre équipe.",
-      "cta": "> reserver_formation"
+      "cta": "Réserver une formation"
     },
     "licenses": {
-      "seoTitle": "Revente de licences logicielles — Skelion Enterprises",
-      "seoDesc": "Licences authentiques Microsoft, Fortinet, Kaspersky, VMware, Adobe, McAfee, Norton et plus — avec dimensionnement honnête, tarifs volume et gestion des renouvellements.",
-      "cmd": "> ls licenses/ --authorized",
+      "seoTitle": "Revente de licences logicielles | Skelion Enterprises",
+      "seoDesc": "Licences authentiques Microsoft, Fortinet, Kaspersky, VMware, Adobe, McAfee, Norton et plus, avec dimensionnement honnête, tarifs volume et gestion des renouvellements.",
+      "cmd": "> licences autorisées",
       "titleA": "Des logiciels authentiques, ",
       "titleAccent": "honnêtement dimensionnés",
-      "sub": "Les licences contrefaites ou du marché gris sont un risque de sécurité déguisé en remise. Nous provisionnons des licences authentiques via des canaux autorisés — et nous vous dirons quand la version inférieure suffit, parce que c'est ce que fait un partenaire de sécurité.",
+      "sub": "Les licences contrefaites ou du marché gris sont un risque de sécurité déguisé en remise. Nous provisionnons des licences authentiques via des canaux autorisés, et nous vous dirons quand la version inférieure suffit, parce que c'est ce que fait un partenaire de sécurité.",
       "vendorsTitle": "Portefeuille d'éditeurs",
       "vendors": [
         {
@@ -807,12 +807,12 @@
       "moreName": "+ D'autres",
       "moreCat": "Demandez n'importe quel éditeur",
       "processTitle": "Le processus licences avec nous",
-      "processCmd": "> cat process.md",
+      "processCmd": "> comment ça marche",
       "process": [
         {
           "id": "STEP_01",
           "title": "Évaluation des besoins",
-          "desc": "Nous regardons ce que vous protégez, ce que vous possédez déjà et ce que vous utilisez réellement — avant de recommander quoi que ce soit."
+          "desc": "Nous regardons ce que vous protégez, ce que vous possédez déjà et ce que vous utilisez réellement, avant de recommander quoi que ce soit."
         },
         {
           "id": "STEP_02",
@@ -833,7 +833,7 @@
       "whyTitle": "Pourquoi acheter via une société de sécurité",
       "whyKicker": "// LA DIFFÉRENCE",
       "why": [
-        "Licences authentiques, canaux autorisés — provenance vérifiable",
+        "Licences authentiques, canaux autorisés, provenance vérifiable",
         "Des conseils de dimensionnement par des gens qui déploient ces outils sur le terrain",
         "Une approche sécurité d'abord : des choix de licences liés à votre risque réel",
         "Tarifs volume, éducation et administration le cas échéant",
@@ -841,23 +841,23 @@
         "Un seul partenaire responsable de la licence et de la sécurité qui l'entoure"
       ],
       "ctaTitle": "Obtenez un devis licences",
-      "ctaDesc": "Indiquez l'éditeur, vos effectifs et votre installation actuelle. Nous revenons avec un dimensionnement honnête et des prix clairs — y compris quand la réponse est « vous n'avez rien à acheter ».",
-      "cta": "> demander_devis"
+      "ctaDesc": "Indiquez l'éditeur, vos effectifs et votre installation actuelle. Nous revenons avec un dimensionnement honnête et des prix clairs, y compris quand la réponse est « vous n'avez rien à acheter ».",
+      "cta": "Demander un devis"
     },
     "physical": {
-      "seoTitle": "Dispositifs de sécurité physique — Skelion Enterprises",
-      "seoDesc": "Contrôle d'accès, vidéosurveillance, détection d'intrusion et systèmes biométriques — spécifiés, fournis et intégrés à votre dispositif de sécurité numérique.",
-      "cmd": "> scan --layer physical --deep",
+      "seoTitle": "Dispositifs de sécurité physique | Skelion Enterprises",
+      "seoDesc": "Contrôle d'accès, vidéosurveillance, détection d'intrusion et systèmes biométriques, spécifiés, fournis et intégrés à votre dispositif de sécurité numérique.",
+      "cmd": "> sécurité physique",
       "titleA": "Le périmètre que l'on peut ",
       "titleAccent": "toucher",
-      "sub": "Votre pare-feu est irréprochable et la porte de votre salle serveurs est retenue par une chaise. Sécurités physique et numérique échouent ensemble — alors nous les concevons ensemble.",
+      "sub": "Votre pare-feu est irréprochable et la porte de votre salle serveurs est retenue par une chaise. Sécurités physique et numérique échouent ensemble, alors nous les concevons ensemble.",
       "catTitle": "Catégories de dispositifs",
-      "catCmd": "> ls devices/ -la",
+      "catCmd": "> dispositifs & systèmes",
       "cats": [
         {
           "ico": "⬡",
           "title": "Contrôle d'accès",
-          "desc": "Qui entre, où et quand — avec une piste d'audit.",
+          "desc": "Qui entre, où et quand, avec une piste d'audit.",
           "points": [
             "Badges, PIN & identifiants mobiles",
             "Gestion centralisée & journaux d'audit",
@@ -896,7 +896,7 @@
         }
       ],
       "processTitle": "De la visite de site au support",
-      "processCmd": "> cat delivery.md",
+      "processCmd": "> notre prestation",
       "process": [
         {
           "id": "STEP_01",
@@ -906,12 +906,12 @@
         {
           "id": "STEP_02",
           "title": "Conception du système",
-          "desc": "Sélection et positionnement des équipements adaptés à votre site et à votre profil de menace — intégrés à votre sécurité numérique dès le premier jour."
+          "desc": "Sélection et positionnement des équipements adaptés à votre site et à votre profil de menace, intégrés à votre sécurité numérique dès le premier jour."
         },
         {
           "id": "STEP_03",
           "title": "Fourniture & Installation",
-          "desc": "Équipements authentiques, installation professionnelle et durcissement de configuration — les identifiants par défaut ne survivent pas à notre livraison."
+          "desc": "Équipements authentiques, installation professionnelle et durcissement de configuration, les identifiants par défaut ne survivent pas à notre livraison."
         },
         {
           "id": "STEP_04",
@@ -923,7 +923,7 @@
       "convergenceKicker": "// CONVERGENCE",
       "convergence": [
         "Des conceptions physiques nourries par notre expérience offensive",
-        "Équipements durcis et segmentés — une caméra est aussi un ordinateur",
+        "Équipements durcis et segmentés, une caméra est aussi un ordinateur",
         "Événements d'accès corrélés à votre supervision numérique",
         "Un seul partenaire responsable du cyber et du physique",
         "Formation du personnel aux procédures numériques et physiques",
@@ -931,14 +931,14 @@
       ],
       "ctaTitle": "Refermez la brèche physique",
       "ctaDesc": "Réservez une visite de site. Nous cartographions votre surface d'attaque physique et proposons un système adapté à votre site, votre menace et votre budget.",
-      "cta": "> reserver_visite_site"
+      "cta": "Réserver une visite de site"
     },
     "contact": {
-      "seoTitle": "Contact — Skelion Enterprises",
+      "seoTitle": "Contact | Skelion Enterprises",
       "seoDesc": "Contactez Skelion Enterprises : tests d'intrusion, GRC & certification ISO, CISO-as-a-Service, formation, licences et sécurité physique. Réponse sous un jour ouvré."
     },
     "notFound": {
-      "seoTitle": "404 — Cible introuvable | Skelion Enterprises",
+      "seoTitle": "404 | Cible introuvable | Skelion Enterprises",
       "termTitle": "skelion@ops:~/lost",
       "l1": "$ resolve --path page_demandee",
       "l2": "[*] Analyse des routes...",
@@ -946,22 +946,22 @@
       "l4": "[!] La page a été déplacée, retirée, ou n'a jamais existé.",
       "comment": "// Aucune vulnérabilité ici. Juste un lien mort.",
       "cdHome": "$ cd /home",
-      "btn": "> retour_accueil"
+      "btn": "Retour à l'accueil"
     }
   },
   "admin": {
-    "seoTitle": "Administration — Skelion Enterprises",
-    "cmd": "> sudo ./console --auth required",
+    "seoTitle": "Administration | Skelion Enterprises",
+    "cmd": "> console sécurisée",
     "title": "Console d'exploitation",
     "loginTitle": "Authentification",
     "email": "E-mail",
     "password": "Mot de passe",
-    "loginBtn": "> authentifier",
-    "loginBusy": "> verification...",
-    "loginFailed": "// accès refusé — vérifiez vos identifiants",
-    "rateLimited": "// trop de tentatives — patientez 15 minutes",
-    "serverDown": "// console injoignable — le serveur est-il démarré ?",
-    "logout": "> deconnexion",
+    "loginBtn": "Se connecter",
+    "loginBusy": "Connexion...",
+    "loginFailed": "// accès refusé, vérifiez vos identifiants",
+    "rateLimited": "// trop de tentatives, patientez 15 minutes",
+    "serverDown": "// console injoignable, le serveur est-il démarré ?",
+    "logout": "Se déconnecter",
     "loggedInAs": "session",
     "submissions": "Demandes de contact",
     "empty": "// aucune demande pour le moment",
@@ -989,7 +989,7 @@
     "statSubscribers": "Abonnés",
     "insightsTitle": "Gérer les analyses",
     "newPost": "+ Nouvel article",
-    "noPosts": "// aucun article — créez le premier",
+    "noPosts": "// aucun article, créez le premier",
     "loading": "chargement...",
     "published": "PUBLIÉ",
     "draft": "BROUILLON",
@@ -1006,7 +1006,7 @@
     "fBodyFr": "Corps (FR)",
     "publishNow": "Publié (visible sur le site public)",
     "slugExists": "// ce slug est déjà utilisé",
-    "saveError": "// échec de l'enregistrement — vérifiez les champs",
+    "saveError": "// échec de l'enregistrement, vérifiez les champs",
     "saving": "enregistrement...",
     "save": "Enregistrer l'article",
     "cancel": "Annuler",
@@ -1019,20 +1019,20 @@
     "delSubConfirm": "Retirer cet abonné ?"
   },
   "insights": {
-    "seoTitle": "Analyses — Skelion Enterprises",
+    "seoTitle": "Analyses | Skelion Enterprises",
     "seoDesc": "Analyses, avis de sécurité et perspectives en cybersécurité par Skelion Enterprises.",
-    "cmd": "> cat analyses/*.md",
+    "cmd": "> analyses",
     "titleA": "Analyses & ",
     "titleAccent": "perspectives",
     "sub": "Notes de terrain, avis de sécurité et perspectives sur la sécurité offensive, la gouvernance et l'évolution des menaces.",
-    "error": "// flux inaccessible — veuillez réessayer sous peu",
+    "error": "// flux inaccessible, veuillez réessayer sous peu",
     "loading": "chargement des analyses",
     "emptyTag": "AUCUNE ENTRÉE POUR L'INSTANT",
     "empty": "De nouvelles analyses sont en préparation. Revenez bientôt, ou abonnez-vous ci-dessous pour être informé.",
     "read": "Lire",
     "back": "Retour aux analyses",
     "notFound": "analyse introuvable",
-    "articleSeo": "Analyse — Skelion Enterprises"
+    "articleSeo": "Analyse, Skelion Enterprises"
   },
   "newsletter": {
     "kicker": "RESTEZ INFORMÉ",
@@ -1041,8 +1041,8 @@
     "placeholder": "vous@entreprise.com",
     "cta": "S'abonner",
     "sending": "Abonnement...",
-    "ok": "// abonnement confirmé — merci",
-    "error": "// une erreur est survenue — veuillez réessayer",
+    "ok": "// abonnement confirmé, merci",
+    "error": "// une erreur est survenue, veuillez réessayer",
     "note": "Nous ne conservons que votre e-mail et votre langue. Jamais partagés."
   },
   "consent": {
@@ -1051,9 +1051,9 @@
     "ok": "J'ai compris"
   },
   "about": {
-    "seoTitle": "À propos — Skelion Enterprises",
+    "seoTitle": "À propos | Skelion Enterprises",
     "seoDesc": "Skelion Enterprises est un cabinet de cybersécurité alliant sécurité offensive, gouvernance et conseil, en anglais et en français.",
-    "cmd": "> whoami",
+    "cmd": "> qui sommes-nous",
     "sub": "Un cabinet de cybersécurité fondé sur une conviction simple : une sécurité qui n'a pas été éprouvée par un adversaire compétent n'est qu'une hypothèse.",
     "titleA": "Notre ",
     "titleAccent": "raison d'être",
@@ -1068,7 +1068,7 @@
       "Des recommandations de remédiation claires, pas une simple liste de problèmes",
       "Contre-test et validation pour confirmer que le risque est réellement clos"
     ],
-    "valuesCmd": "> cat valeurs.md",
+    "valuesCmd": "> ce qui nous guide",
     "valuesTitle": "Ce qui nous guide",
     "values": [
       {
@@ -1107,9 +1107,9 @@
     "cta": "Nous contacter"
   },
   "faq": {
-    "seoTitle": "FAQ — Skelion Enterprises",
+    "seoTitle": "FAQ | Skelion Enterprises",
     "seoDesc": "Réponses aux questions fréquentes sur les missions, la confidentialité, les référentiels et la prestation bilingue de Skelion Enterprises.",
-    "cmd": "> man skelion",
+    "cmd": "> questions fréquentes",
     "sub": "Les questions que l'on nous pose le plus souvent sur nos missions, notre méthode et notre façon de travailler.",
     "titleA": "Questions ",
     "titleAccent": "fréquentes",

@@ -27,15 +27,13 @@ export default function Nav() {
       <div className="max-w-site mx-auto px-7 h-[66px] flex items-center justify-between gap-5">
         <Link
           to="/"
-          className="flex items-center gap-2.5"
+          className="flex items-center"
           onClick={() => setOpen(false)}
           aria-label="Skelion Enterprises — home"
         >
           <span className="logo-shimmer logo-anim logo-hover overflow-hidden rounded inline-block shrink-0">
-            <img src="/brand/skelion-mark.png" alt="" className="h-[32px] w-auto block" draggable={false} decoding="async" />
+            <img src="/brand/skelion-logo.png" alt="Skelion Enterprises" className="h-[34px] w-auto block" draggable={false} decoding="async" />
           </span>
-          <span className="font-mono font-medium text-[1.02rem] !text-paper tracking-[.06em] max-[420px]:hidden">SKELION</span>
-          <span className="w-[8px] h-[16px] bg-teal inline-block animate-blink max-[420px]:hidden" aria-hidden="true" />
         </Link>
 
         <button

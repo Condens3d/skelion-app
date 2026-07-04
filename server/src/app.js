@@ -7,13 +7,15 @@ import { contactRouter } from './routes/contact.js';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { publicApiRouter } from './routes/publicApi.js';
+import { createMailer } from './mailer.js';
 
 const SITE = process.env.PUBLIC_ORIGIN || 'https://skelionenterprises.com';
-const SEC_CONTACT = process.env.SECURITY_CONTACT || 'security@skelionenterprises.com';
+const SEC_CONTACT = process.env.SECURITY_CONTACT || 'jedusor@skeliontech.com';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function createApp(store, config) {
+export function createApp(store, config, log = console) {
   const app = express();
+  const mailer = createMailer(config, log);
   app.disable('x-powered-by');
   if (config.trustProxy) app.set('trust proxy', 1);
 
@@ -38,7 +40,7 @@ export function createApp(store, config) {
 
   // ---- API ----
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver, api: 'v1' }));
-  app.use('/api/contact', contactRouter(store));
+  app.use('/api/contact', contactRouter(store, mailer));
   app.use('/api/auth', authRouter(store, config));
   app.use('/api/v1', publicApiRouter(store));
   app.use('/api/admin', adminRouter(store, config));

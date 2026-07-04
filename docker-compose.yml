@@ -36,6 +36,16 @@ services:
       # First-boot admin seed (comment out after the account exists).
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Email notifications (optional; leave SMTP_HOST empty to store-only).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-0}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-Skelion Website <no-reply@skeliontech.com>}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-jedusor@skeliontech.com}
+      SECURITY_CONTACT: ${SECURITY_CONTACT:-jedusor@skeliontech.com}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-https://skelionenterprises.com}
     ports:
       - "8080:8080"
 

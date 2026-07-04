@@ -21,6 +21,17 @@ export const config = {
   adminEmail: process.env.ADMIN_EMAIL || '',
   adminPassword: process.env.ADMIN_PASSWORD || '',
   trustProxy: process.env.TRUST_PROXY === '1',
+  // Email notifications (optional). If SMTP_HOST is unset, submissions are stored
+  // in the admin panel only and no email is sent (graceful degradation).
+  mail: {
+    host: process.env.SMTP_HOST || '',
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: process.env.SMTP_SECURE === '1', // true for port 465
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    from: process.env.MAIL_FROM || 'Skelion Website <no-reply@skeliontech.com>',
+    to: process.env.CONTACT_RECIPIENT || 'jedusor@skeliontech.com',
+  },
 };
 
 // Guard: in production, refuse to boot on the experimental embedded DB.
