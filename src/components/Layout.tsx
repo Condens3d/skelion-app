@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Nav from './Nav';
 import Footer from './Footer';
+import CookieConsent from './CookieConsent';
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <CookieConsent />
     </>
   );
 }

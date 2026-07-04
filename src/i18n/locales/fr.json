@@ -14,7 +14,8 @@
     "menu": "MENU",
     "menuLabel": "Afficher le menu",
     "skip": "Aller au contenu",
-    "langLabel": "Changer de langue"
+    "langLabel": "Changer de langue",
+    "insights": "Analyses"
   },
   "home": {
     "seoTitle": "Skelion Enterprises — Cybersécurité, Tests d'intrusion, GRC & Licences",
@@ -36,7 +37,12 @@
       "GRC"
     ],
     "termTitle": "skelion@ops:~/engagements",
-    "termAria": "Terminal de mission Skelion simulé"
+    "termAria": "Terminal de mission Skelion simulé",
+    "tagline": [
+      "Sécurisé par la politique",
+      "Vérifié par l'audit",
+      "Éprouvé par l'adversaire"
+    ]
   },
   "stats": {
     "s1n": "6",
@@ -380,7 +386,11 @@
     "contact": "Nous contacter",
     "call": "Appelez-nous",
     "rights": "© 2026 Skelion Enterprises. Tous droits réservés.",
-    "exit": "secure_the_enterprise.sh — exit 0"
+    "exit": "secure_the_enterprise.sh — exit 0",
+    "company": "Entreprise",
+    "about": "À propos",
+    "faq": "FAQ",
+    "insights": "Analyses"
   },
   "pages": {
     "pentesting": {
@@ -967,6 +977,174 @@
     "markNew": "rouvrir",
     "del": "supprimer",
     "delConfirm": "Supprimer définitivement cette demande ?",
-    "total": "total"
+    "total": "total",
+    "tabOverview": "Aperçu",
+    "tabInsights": "Analyses",
+    "tabSubmissions": "Messages",
+    "tabSubscribers": "Abonnés",
+    "statNewMsgs": "Nouveaux messages",
+    "statTotalMsgs": "Total des messages",
+    "statPublished": "Publiées",
+    "statTotalPosts": "Total des articles",
+    "statSubscribers": "Abonnés",
+    "insightsTitle": "Gérer les analyses",
+    "newPost": "+ Nouvel article",
+    "noPosts": "// aucun article — créez le premier",
+    "loading": "chargement...",
+    "published": "PUBLIÉ",
+    "draft": "BROUILLON",
+    "edit": "modifier",
+    "delPostConfirm": "Supprimer définitivement cet article ?",
+    "fSlug": "Slug (URL)",
+    "autoSlug": "auto",
+    "fTag": "Étiquette",
+    "fTitleEn": "Titre (EN)",
+    "fTitleFr": "Titre (FR)",
+    "fExcerptEn": "Extrait (EN)",
+    "fExcerptFr": "Extrait (FR)",
+    "fBodyEn": "Corps (EN)",
+    "fBodyFr": "Corps (FR)",
+    "publishNow": "Publié (visible sur le site public)",
+    "slugExists": "// ce slug est déjà utilisé",
+    "saveError": "// échec de l'enregistrement — vérifiez les champs",
+    "saving": "enregistrement...",
+    "save": "Enregistrer l'article",
+    "cancel": "Annuler",
+    "backToList": "Retour à la liste",
+    "untitled": "Sans titre",
+    "preview": "Aperçu en direct",
+    "subscribersTitle": "Abonnés à la lettre d'information",
+    "exportCsv": "Exporter CSV",
+    "noSubs": "// aucun abonné pour l'instant",
+    "delSubConfirm": "Retirer cet abonné ?"
+  },
+  "insights": {
+    "seoTitle": "Analyses — Skelion Enterprises",
+    "seoDesc": "Analyses, avis de sécurité et perspectives en cybersécurité par Skelion Enterprises.",
+    "cmd": "> cat analyses/*.md",
+    "titleA": "Analyses & ",
+    "titleAccent": "perspectives",
+    "sub": "Notes de terrain, avis de sécurité et perspectives sur la sécurité offensive, la gouvernance et l'évolution des menaces.",
+    "error": "// flux inaccessible — veuillez réessayer sous peu",
+    "loading": "chargement des analyses",
+    "emptyTag": "AUCUNE ENTRÉE POUR L'INSTANT",
+    "empty": "De nouvelles analyses sont en préparation. Revenez bientôt, ou abonnez-vous ci-dessous pour être informé.",
+    "read": "Lire",
+    "back": "Retour aux analyses",
+    "notFound": "analyse introuvable",
+    "articleSeo": "Analyse — Skelion Enterprises"
+  },
+  "newsletter": {
+    "kicker": "RESTEZ INFORMÉ",
+    "title": "Nos analyses dans votre boîte mail",
+    "sub": "Avis et analyses occasionnels. Pas de bruit, aucune revente de données, désabonnement à tout moment.",
+    "placeholder": "vous@entreprise.com",
+    "cta": "S'abonner",
+    "sending": "Abonnement...",
+    "ok": "// abonnement confirmé — merci",
+    "error": "// une erreur est survenue — veuillez réessayer",
+    "note": "Nous ne conservons que votre e-mail et votre langue. Jamais partagés."
+  },
+  "consent": {
+    "aria": "Avis relatif aux cookies",
+    "text": "Ce site n'utilise qu'une préférence fonctionnelle pour votre langue. Aucun cookie publicitaire ni de suivi.",
+    "ok": "J'ai compris"
+  },
+  "about": {
+    "seoTitle": "À propos — Skelion Enterprises",
+    "seoDesc": "Skelion Enterprises est un cabinet de cybersécurité alliant sécurité offensive, gouvernance et conseil, en anglais et en français.",
+    "cmd": "> whoami",
+    "sub": "Un cabinet de cybersécurité fondé sur une conviction simple : une sécurité qui n'a pas été éprouvée par un adversaire compétent n'est qu'une hypothèse.",
+    "titleA": "Notre ",
+    "titleAccent": "raison d'être",
+    "missionTitle": "Notre mission",
+    "missionA": "Skelion Enterprises est un cabinet de cybersécurité fondé sur une conviction simple : une sécurité qui n'a pas été mise à l'épreuve par un adversaire compétent n'est qu'une hypothèse.",
+    "missionB": "Nous réunissons la sécurité offensive, la gouvernance et la conformité, ainsi que le conseil de direction, au sein d'une même équipe responsable, avec une prestation bilingue en anglais et en français, afin que les organisations puissent affronter un environnement de menaces hostile avec des preuves plutôt que des suppositions.",
+    "approachKicker": "NOTRE APPROCHE",
+    "approach": [
+      "Évaluation guidée par la menace, cadrée sur votre surface d'attaque réelle",
+      "Constats reliés à des référentiels reconnus et à l'impact métier",
+      "Des opérateurs seniors sur chaque mission, sans délégation à des juniors",
+      "Des recommandations de remédiation claires, pas une simple liste de problèmes",
+      "Contre-test et validation pour confirmer que le risque est réellement clos"
+    ],
+    "valuesCmd": "> cat valeurs.md",
+    "valuesTitle": "Ce qui nous guide",
+    "values": [
+      {
+        "id": "01",
+        "title": "État d'esprit offensif",
+        "desc": "Nous évaluons les systèmes comme le ferait un véritable attaquant, et non comme le suppose une simple liste de contrôle."
+      },
+      {
+        "id": "02",
+        "title": "La preuve avant l'affirmation",
+        "desc": "Chaque constat est démontrable et reproductible. Nous prouvons, nous ne nous contentons pas d'affirmer."
+      },
+      {
+        "id": "03",
+        "title": "La confidentialité d'abord",
+        "desc": "Les données de mission sont traitées selon une stricte discipline du besoin d'en connaître et une conservation sécurisée."
+      },
+      {
+        "id": "04",
+        "title": "Aligné sur le métier",
+        "desc": "Les décisions de sécurité sont formulées en termes de risque, de coût et de réalité opérationnelle, non de peur."
+      },
+      {
+        "id": "05",
+        "title": "Bilingue par conception",
+        "desc": "Nous travaillons couramment en anglais et en français, des rapports aux présentations jusqu'à la prestation."
+      },
+      {
+        "id": "06",
+        "title": "Spectre complet",
+        "desc": "Tests offensifs, gouvernance et conseil au sein d'une seule équipe responsable."
+      }
+    ],
+    "ctaTitle": "Discutons de votre posture de sécurité",
+    "ctaDesc": "Que vous prépariez un audit, une évaluation offensive ou une feuille de route de conformité, nous pouvons vous aider.",
+    "cta": "Nous contacter"
+  },
+  "faq": {
+    "seoTitle": "FAQ — Skelion Enterprises",
+    "seoDesc": "Réponses aux questions fréquentes sur les missions, la confidentialité, les référentiels et la prestation bilingue de Skelion Enterprises.",
+    "cmd": "> man skelion",
+    "sub": "Les questions que l'on nous pose le plus souvent sur nos missions, notre méthode et notre façon de travailler.",
+    "titleA": "Questions ",
+    "titleAccent": "fréquentes",
+    "items": [
+      {
+        "q": "À quoi ressemble une mission type ?",
+        "a": "Elle commence par un cadrage définissant les objectifs et le périmètre, se poursuit par des travaux d'évaluation ou de conseil menés par des opérateurs seniors, et se termine par un rapport clair et un plan de remédiation. Le cas échéant, nous effectuons un contre-test pour confirmer que les problèmes sont clos."
+      },
+      {
+        "q": "Comment protégez-vous la confidentialité de nos données ?",
+        "a": "Le matériel de mission est traité selon un strict principe du besoin d'en connaître, avec une conservation sécurisée et une discipline rigoureuse tout au long. Nous pouvons nous aligner sur vos propres exigences de traitement et de localisation des données."
+      },
+      {
+        "q": "Avec quels référentiels et normes travaillez-vous ?",
+        "a": "Nous relions nos travaux à des référentiels largement reconnus tels qu'ISO 27001, NIST et les modèles de gouvernance associés, et nous adaptons le cadre de référence à votre secteur et à votre contexte réglementaire."
+      },
+      {
+        "q": "Travaillez-vous en anglais et en français ?",
+        "a": "Oui. Les rapports, présentations et prestations sont disponibles couramment en anglais et en français, ce qui compte pour les organisations évoluant dans des environnements bilingues et régionaux."
+      },
+      {
+        "q": "Comment vos tarifs sont-ils structurés ?",
+        "a": "Le tarif dépend du périmètre, de la profondeur et de la durée. Nous le définissons de façon transparente lors du cadrage, sans surprise, et nous l'alignons sur le résultat dont vous avez besoin plutôt que sur un modèle figé."
+      },
+      {
+        "q": "Pouvez-vous couvrir à la fois les tests offensifs et la conformité ?",
+        "a": "Oui. La sécurité offensive, la gouvernance et la conformité, ainsi que le conseil, relèvent d'une même équipe : l'éclairage des tests nourrit la gouvernance, et inversement, sans les lacunes propres à des prestataires distincts."
+      },
+      {
+        "q": "Comment démarrer ?",
+        "a": "Contactez-nous via la page de contact ou par téléphone. Nous organiserons un échange de cadrage pour comprendre vos objectifs et vos contraintes, puis nous vous proposerons une approche."
+      }
+    ],
+    "ctaTitle": "Une autre question ?",
+    "ctaDesc": "Si votre question ne figure pas ici, contactez-nous directement et nous vous répondrons.",
+    "cta": "Nous contacter"
   }
 }

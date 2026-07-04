@@ -5,7 +5,12 @@ import { existsSync } from 'node:fs';
 import { resolve, extname } from 'node:path';
 import { contactRouter } from './routes/contact.js';
 import { authRouter } from './routes/auth.js';
-import { submissionsRouter } from './routes/submissions.js';
+import { adminRouter } from './routes/admin.js';
+import { publicApiRouter } from './routes/publicApi.js';
+
+const SITE = process.env.PUBLIC_ORIGIN || 'https://skelionenterprises.com';
+const SEC_CONTACT = process.env.SECURITY_CONTACT || 'security@skelionenterprises.com';
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function createApp(store, config) {
   const app = express();
@@ -16,15 +21,9 @@ export function createApp(store, config) {
     contentSecurityPolicy: {
       useDefaults: false,
       directives: {
-        'default-src': ["'self'"],
-        'script-src': ["'self'"],
-        'style-src': ["'self'"],
-        'font-src': ["'self'"],
-        'img-src': ["'self'", 'data:'],
-        'connect-src': ["'self'"],
-        'frame-ancestors': ["'none'"],
-        'base-uri': ["'self'"],
-        'form-action': ["'self'"],
+        'default-src': ["'self'"], 'script-src': ["'self'"], 'style-src': ["'self'"],
+        'font-src': ["'self'"], 'img-src': ["'self'", 'data:'], 'connect-src': ["'self'"],
+        'frame-ancestors': ["'none'"], 'base-uri': ["'self'"], 'form-action': ["'self'"],
         ...(config.isProd ? { 'upgrade-insecure-requests': [] } : {}),
       },
     },
@@ -33,25 +32,46 @@ export function createApp(store, config) {
     crossOriginOpenerPolicy: { policy: 'same-origin' },
     xFrameOptions: { action: 'deny' },
   }));
-  app.use((_req, res, next) => {
-    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
-    next();
-  });
-
-  app.use(express.json({ limit: '64kb' }));
+  app.use((_req, res, next) => { res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()'); next(); });
+  app.use(express.json({ limit: '256kb' }));
   app.use(cookieParser());
 
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver }));
+  // ---- API ----
+  app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver, api: 'v1' }));
   app.use('/api/contact', contactRouter(store));
   app.use('/api/auth', authRouter(store, config));
-  app.use('/api/submissions', submissionsRouter(store, config));
+  app.use('/api/v1', publicApiRouter(store));
+  app.use('/api/admin', adminRouter(store, config));
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));
 
+  // ---- security.txt (RFC 9116) ----
+  app.get(['/.well-known/security.txt', '/security.txt'], (_req, res) => {
+    const expires = new Date(Date.now() + 365 * 864e5).toISOString();
+    res.type('text/plain').send(
+      `# Skelion Enterprises security contact\nContact: mailto:${SEC_CONTACT}\nContact: tel:+237694429113\nExpires: ${expires}\nPreferred-Languages: en, fr\nCanonical: ${SITE}/.well-known/security.txt\n`
+    );
+  });
+
+  // ---- RSS 2.0 feed of published insights ----
+  app.get('/rss.xml', async (_req, res, next) => {
+    try {
+      const { items } = await store.listPublishedPosts(50, 0);
+      const entries = items.map((p) => {
+        const url = `${SITE}/insights/${p.slug}`;
+        const date = p.published_at ? new Date(p.published_at).toUTCString() : new Date().toUTCString();
+        return `    <item>\n      <title>${esc(p.title_en)}</title>\n      <link>${url}</link>\n      <guid isPermaLink="true">${url}</guid>\n      <description>${esc(p.excerpt_en)}</description>\n      <pubDate>${date}</pubDate>\n    </item>`;
+      }).join('\n');
+      res.type('application/rss+xml').send(
+        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>Skelion Enterprises — Insights</title>\n    <link>${SITE}/insights</link>\n    <description>Cybersecurity insights from Skelion Enterprises.</description>\n    <language>en</language>\n${entries}\n  </channel>\n</rss>\n`
+      );
+    } catch (e) { next(e); }
+  });
+
+  // ---- static SPA + prerendered routes ----
   const dist = resolve(config.distPath);
   if (existsSync(dist)) {
     app.use(express.static(dist, {
-      index: 'index.html',
-      redirect: false, // no 301 to trailing slash; catch-all serves clean URLs
+      index: 'index.html', redirect: false,
       setHeaders(res, filePath) {
         if (filePath.includes('/assets/')) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
         else if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
@@ -61,8 +81,6 @@ export function createApp(store, config) {
     app.get('*', (req, res) => {
       if (extname(req.path)) return res.status(404).end();
       res.setHeader('Cache-Control', 'no-cache');
-      // Serve the prerendered per-route shell (baked SEO meta) when it exists,
-      // otherwise fall back to the root shell.
       const clean = req.path.replace(/\/+$/, '');
       const candidate = resolve(dist, '.' + clean, 'index.html');
       if (clean && existsSync(candidate)) return res.sendFile(candidate);
@@ -70,12 +88,7 @@ export function createApp(store, config) {
     });
   }
 
-  // JSON error handler (never leak stack traces to clients)
   // eslint-disable-next-line no-unused-vars
-  app.use((err, _req, res, _next) => {
-    console.error('[error]', err.message);
-    res.status(500).json({ error: 'internal_error' });
-  });
-
+  app.use((err, _req, res, _next) => { console.error('[error]', err.message); res.status(500).json({ error: 'internal_error' }); });
   return app;
 }

@@ -1,31 +1,33 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import Logo from './Logo';
 
 export default function Footer() {
   const { t } = useTranslation();
   return (
     <footer className="border-t border-soft bg-ink-2 pt-16 pb-10">
       <div className="wrap">
-        <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr] max-[1024px]:grid-cols-2 max-[640px]:grid-cols-1 gap-11 mb-12">
+        <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] max-[1024px]:grid-cols-2 max-[640px]:grid-cols-1 gap-11 mb-12">
           <div>
-            <Link to="/" className="font-mono font-medium text-[1.02rem] !text-paper inline-flex items-center gap-[9px] tracking-[.04em]">
-              <span className="text-cyan">&gt;</span> SKELION
-              <span className="w-[9px] h-[18px] bg-teal inline-block animate-blink" aria-hidden="true" />
-            </Link>
-            <p className="text-paper-dim text-[.9rem] my-4 max-w-[300px]">{t('footer.blurb')}</p>
-            <span className="mini-mono">skelionenterprises.com · +237 694 429 113</span>
+            <Logo variant="lockup" imgClass="h-[38px] w-auto block" />
+            <p className="text-paper-dim text-[.9rem] my-4 max-w-[310px]">{t('footer.blurb')}</p>
+            <span className="mini-mono block">skelionenterprises.com · +237 694 429 113</span>
+            <a href="/rss.xml" className="mini-mono inline-flex items-center gap-1.5 mt-2.5 hover:!text-cyan before:content-['>_']">RSS</a>
           </div>
           <FootCol title={t('footer.services')}>
             <FootLink to="/pentesting">{t('footer.pentest')}</FootLink>
             <FootLink to="/grc">{t('footer.grc')}</FootLink>
             <FootLink to="/ciso">{t('footer.ciso')}</FootLink>
+            <FootLink to="/training">{t('footer.training')}</FootLink>
           </FootCol>
           <FootCol title={t('footer.more')}>
-            <FootLink to="/training">{t('footer.training')}</FootLink>
             <FootLink to="/licenses">{t('footer.licensing')}</FootLink>
             <FootLink to="/physical">{t('footer.physical')}</FootLink>
+            <FootLink to="/insights">{t('footer.insights')}</FootLink>
           </FootCol>
-          <FootCol title={t('footer.engage')}>
+          <FootCol title={t('footer.company')}>
+            <FootLink to="/about">{t('footer.about')}</FootLink>
+            <FootLink to="/faq">{t('footer.faq')}</FootLink>
             <FootLink to="/contact">{t('footer.contact')}</FootLink>
             <li>
               <a href="tel:+237694429113" className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-paper-dim">
@@ -36,7 +38,10 @@ export default function Footer() {
         </div>
         <div className="border-t border-soft pt-7 flex justify-between items-center gap-4 flex-wrap font-mono text-[.76rem] text-paper-dim">
           <span>{t('footer.rights')}</span>
-          <span>{t('footer.exit')}</span>
+          <span className="inline-flex items-center gap-2">
+            <span className="w-[7px] h-[7px] rounded-full bg-teal animate-pulse2" aria-hidden="true" />
+            {t('footer.exit')}
+          </span>
         </div>
       </div>
     </footer>

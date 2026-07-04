@@ -1,0 +1,104 @@
+import { Router } from 'express';
+import { requireAuth } from '../auth.js';
+import { PostSchema } from '../validation.js';
+
+/** /api/admin — all endpoints require a valid session. */
+export function adminRouter(store, config) {
+  const router = Router();
+  router.use(requireAuth(config));
+
+  router.get('/stats', async (_req, res, next) => {
+    try { res.json(await store.stats()); } catch (e) { next(e); }
+  });
+
+  // ---- submissions ----
+  router.get('/submissions', async (req, res, next) => {
+    try {
+      const limit = Math.min(Number(req.query.limit) || 50, 200);
+      const offset = Math.max(Number(req.query.offset) || 0, 0);
+      res.json(await store.listSubmissions(limit, offset));
+    } catch (e) { next(e); }
+  });
+  router.patch('/submissions/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    try {
+      const ok = await store.setSubmissionHandled(id, !!req.body?.handled);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+  router.delete('/submissions/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    try {
+      const ok = await store.deleteSubmission(id);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  // ---- insights (content CRUD) ----
+  router.get('/insights', async (_req, res, next) => {
+    try { res.json(await store.listAllPosts()); } catch (e) { next(e); }
+  });
+  router.get('/insights/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    try {
+      const post = await store.getPostById(id);
+      if (!post) return res.status(404).json({ error: 'not_found' });
+      res.json(post);
+    } catch (e) { next(e); }
+  });
+  router.post('/insights', async (req, res, next) => {
+    const parsed = PostSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'validation_failed', fields: parsed.error.flatten().fieldErrors });
+    try {
+      const id = await store.createPost(parsed.data);
+      res.status(201).json({ ok: true, id });
+    } catch (e) {
+      if (String(e.message || '').match(/unique|UNIQUE|duplicate/i)) return res.status(409).json({ error: 'slug_exists' });
+      next(e);
+    }
+  });
+  router.put('/insights/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    const parsed = PostSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'validation_failed', fields: parsed.error.flatten().fieldErrors });
+    try {
+      const ok = await store.updatePost(id, parsed.data);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) {
+      if (String(e.message || '').match(/unique|UNIQUE|duplicate/i)) return res.status(409).json({ error: 'slug_exists' });
+      next(e);
+    }
+  });
+  router.delete('/insights/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    try {
+      const ok = await store.deletePost(id);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  // ---- subscribers ----
+  router.get('/subscribers', async (_req, res, next) => {
+    try { res.json(await store.listSubscribers()); } catch (e) { next(e); }
+  });
+  router.delete('/subscribers/:id', async (req, res, next) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
+    try {
+      const ok = await store.deleteSubscriber(id);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  return router;
+}

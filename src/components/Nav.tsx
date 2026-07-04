@@ -10,6 +10,7 @@ const links = [
   { to: '/training', key: 'training' },
   { to: '/licenses', key: 'licenses' },
   { to: '/physical', key: 'physical' },
+  { to: '/insights', key: 'insights' },
 ] as const;
 
 export default function Nav() {
@@ -26,11 +27,15 @@ export default function Nav() {
       <div className="max-w-site mx-auto px-7 h-[66px] flex items-center justify-between gap-5">
         <Link
           to="/"
-          className="font-mono font-medium text-[1.02rem] !text-paper flex items-center gap-[9px] tracking-[.04em]"
+          className="flex items-center gap-2.5"
           onClick={() => setOpen(false)}
+          aria-label="Skelion Enterprises — home"
         >
-          <span className="text-cyan">&gt;</span> SKELION
-          <span className="w-[9px] h-[18px] bg-teal inline-block animate-blink" aria-hidden="true" />
+          <span className="logo-shimmer logo-anim logo-hover overflow-hidden rounded inline-block shrink-0">
+            <img src="/brand/skelion-mark.png" alt="" className="h-[32px] w-auto block" draggable={false} decoding="async" />
+          </span>
+          <span className="font-mono font-medium text-[1.02rem] !text-paper tracking-[.06em] max-[420px]:hidden">SKELION</span>
+          <span className="w-[8px] h-[16px] bg-teal inline-block animate-blink max-[420px]:hidden" aria-hidden="true" />
         </Link>
 
         <button

@@ -26,6 +26,9 @@ const routes = [
   { path: '/licenses', title: en.pages.licenses.seoTitle, desc: en.pages.licenses.seoDesc },
   { path: '/physical', title: en.pages.physical.seoTitle, desc: en.pages.physical.seoDesc },
   { path: '/contact', title: en.pages.contact.seoTitle, desc: en.pages.contact.seoDesc },
+  { path: '/insights', title: en.insights.seoTitle, desc: en.insights.seoDesc },
+  { path: '/about', title: en.about.seoTitle, desc: en.about.seoDesc },
+  { path: '/faq', title: en.faq.seoTitle, desc: en.faq.seoDesc },
 ];
 
 const JSON_LD = {

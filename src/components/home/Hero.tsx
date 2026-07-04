@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Terminal, { TermLine } from '../Terminal';
+import NodeMesh from '../NodeMesh';
 
 const TERM_LINES: TermLine[] = [
   { t: '$ skelion --init engagement', c: 'c-prompt', d: 400 },
@@ -22,9 +23,11 @@ const TERM_LINES: TermLine[] = [
 export default function Hero() {
   const { t } = useTranslation();
   const tags = t('home.tags', { returnObjects: true }) as string[];
+  const tagline = t('home.tagline', { returnObjects: true }) as string[];
   return (
-    <header className="min-h-screen flex items-center pt-[150px] pb-[90px]">
-      <div className="wrap grid grid-cols-[1.05fr_.95fr] max-[1024px]:grid-cols-1 gap-14 items-center w-full">
+    <header className="relative min-h-screen flex items-center pt-[150px] pb-[90px] overflow-hidden">
+      <NodeMesh className="opacity-[0.9]" />
+      <div className="relative z-10 wrap grid grid-cols-[1.05fr_.95fr] max-[1024px]:grid-cols-1 gap-14 items-center w-full">
         <div>
           <span className="font-mono text-[.78rem] text-teal tracking-[.14em] border border-teal/30 inline-flex gap-2 items-center px-3.5 py-1.5 rounded-full mb-[26px] bg-teal/5">
             <span className="w-[7px] h-[7px] rounded-full bg-teal animate-pulse2" aria-hidden="true" />
@@ -39,10 +42,22 @@ export default function Hero() {
             <span className="text-teal">{t('home.h1c')}</span>
             {t('home.h1cRest')}
           </h1>
-          <p className="text-paper-dim text-[1.12rem] max-w-[540px] mb-[34px]">{t('home.lead')}</p>
+          <p className="text-paper-dim text-[1.12rem] max-w-[540px] mb-6">{t('home.lead')}</p>
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-[30px] font-mono text-[.82rem]" aria-label={tagline.join(' ')}>
+            {tagline.map((clause, i) => (
+              <span
+                key={clause}
+                className="animate-float-up inline-flex items-center after:content-['/'] after:ml-3 after:text-slate last:after:content-['']"
+                style={{ animationDelay: `${0.2 + i * 0.22}s` }}
+              >
+                <span className="text-cyan mr-1.5" aria-hidden="true">&gt;</span>
+                <span className="text-paper-dim tracking-[.02em]">{clause}</span>
+              </span>
+            ))}
+          </div>
           <div className="flex gap-4 flex-wrap mb-9">
-            <Link to="/contact" className="btn btn-primary">{t('home.ctaPrimary')}</Link>
-            <a href="#services" className="btn btn-ghost">{t('home.ctaGhost')}</a>
+            <Link to="/contact" className="btn btn-primary neu-btn">{t('home.ctaPrimary')}</Link>
+            <a href="#services" className="btn btn-ghost neu-btn">{t('home.ctaGhost')}</a>
           </div>
           <div className="font-mono text-[.78rem] text-paper-dim flex gap-[18px] flex-wrap">
             {tags.map((tag) => (
