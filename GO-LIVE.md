@@ -115,6 +115,35 @@ not shared hosting.
 7. After the admin account exists, edit `.env` to remove `ADMIN_EMAIL` /
    `ADMIN_PASSWORD` and `docker compose up -d` again.
 
+### Option A2 — Hostinger managed Node.js Web App hosting (what you have now)
+
+If your site already appears under hPanel -> Websites as a Node.js app, use this.
+
+1. **Force server-side mode.** The auto-detected "Vite" framework builds a static
+   site, which breaks the API and admin. Open the site's Settings / Build and
+   output settings and set:
+   - Build command: `npm install && npm --prefix server install && npm run build`
+   - Start command: `node server/src/index.js`
+   - Root directory: `./`
+   If the settings screen offers no start command for your app type, remove the
+   website and re-add it via Add Website -> Node.js Web App, choosing Express /
+   custom server instead of the Vite preset, then reconnect the GitHub repo.
+2. **Database.** Hostinger's own databases are MySQL-only, which this app does
+   not use. In the Node.js dashboard, use the Database Connect Wizard and pick
+   **Supabase** (managed PostgreSQL, free tier is fine). After connecting, open
+   Environment variables and make sure there is a `DATABASE_URL` in the form
+   `postgresql://...`. If the wizard injected differently named variables, copy
+   the connection string from Supabase (Project Settings -> Database -> use the
+   Session pooler URI, port 5432) into `DATABASE_URL` yourself.
+3. **Environment variables** (hPanel -> your site -> Environment variables):
+   `NODE_ENV=production`, `DATABASE_URL`, `SESSION_SECRET`, `TRUST_PROXY=1`,
+   `PUBLIC_ORIGIN=https://yourdomain.com`, first-boot `ADMIN_EMAIL` and
+   `ADMIN_PASSWORD`, plus the `SMTP_*` block for email. Hostinger applies env
+   vars at the next deployment, so hit Redeploy after saving.
+4. **Verify.** `https://yourdomain/.well-known/security.txt` should load, then
+   sign in at `/admin`. Afterwards remove the `ADMIN_*` seed variables and
+   redeploy once more.
+
 ### Option B — Managed platform (least server admin)
 
 If you would rather not manage a server, a container platform plus managed

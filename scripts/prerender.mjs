@@ -12,7 +12,8 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://skelionenterprises.com';
+// Deployment domain: set PUBLIC_ORIGIN at build time (Hostinger env vars work).
+const SITE = (process.env.PUBLIC_ORIGIN || 'https://skelionenterprises.com').replace(/\/$/, '');
 const en = JSON.parse(readFileSync(resolve(root, 'src/i18n/locales/en.json'), 'utf8'));
 const shell = readFileSync(resolve(root, 'dist/index.html'), 'utf8');
 
@@ -79,3 +80,13 @@ for (const r of routes) {
   count++;
 }
 console.log(`[prerender] wrote ${count} route HTML files with baked SEO meta`);
+
+// Rewrite sitemap.xml and robots.txt in dist to the deployed origin.
+for (const f of ['sitemap.xml', 'robots.txt']) {
+  const p = resolve(root, 'dist', f);
+  try {
+    const txt = readFileSync(p, 'utf8').replaceAll('https://skelionenterprises.com', SITE);
+    writeFileSync(p, txt);
+  } catch { /* file absent: nothing to rewrite */ }
+}
+console.log(`[prerender] canonical origin: ${SITE}`);

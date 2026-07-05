@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 
-const SITE = 'https://skelionenterprises.com';
+// Canonical/OG URLs follow whatever origin the site is actually served from
+// (skelionenterprises.com, skeliontech.com, localhost). SSR-safe fallback.
+const SITE =
+  typeof window !== 'undefined' && window.location?.origin
+    ? window.location.origin
+    : 'https://skelionenterprises.com';
 
 interface SeoOptions {
   title: string;
