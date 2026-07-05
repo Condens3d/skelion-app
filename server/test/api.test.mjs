@@ -207,3 +207,87 @@ test('contact returns a trackable reference', async (t) => {
   assert.equal(r.status, 201);
   assert.match(r.body.reference, /^SKL-R-\d{5}$/);
 });
+// ---- Client portal ----
+async function provision(app, cookie) {
+  const c1 = await request(app).post('/api/admin/clients').set('Cookie', cookie).send({ name: 'ACME Corp' });
+  const c2 = await request(app).post('/api/admin/clients').set('Cookie', cookie).send({ name: 'Globex' });
+  await request(app).post('/api/admin/client-users').set('Cookie', cookie)
+    .send({ client_id: c1.body.id, email: 'alice@acme.com', name: 'Alice', password: 'acme-secret-pass-1' });
+  await request(app).post('/api/admin/client-users').set('Cookie', cookie)
+    .send({ client_id: c2.body.id, email: 'bob@globex.com', name: 'Bob', password: 'globex-secret-pw-1' });
+  const e1 = await request(app).post('/api/admin/engagements').set('Cookie', cookie)
+    .send({ client_id: c1.body.id, title: 'External Pentest Q3', type: 'pentest', status: 'active' });
+  await request(app).post('/api/admin/findings').set('Cookie', cookie)
+    .send({ engagement_id: e1.body.id, title: 'SQLi on /login', severity: 'critical', cvss: 9.8, status: 'open', description: 'Injection point', impact: 'Full DB read', remediation: 'Parameterize queries' });
+  return { c1: c1.body.id, c2: c2.body.id, e1: e1.body.id };
+}
+async function portalLogin(app, email, password) {
+  const r = await request(app).post('/api/portal/login').send({ email, password });
+  return r.headers['set-cookie'];
+}
+
+test('portal: provisioning, login, engagement + findings visible to own tenant', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const { e1 } = await provision(app, admin);
+  const ck = await portalLogin(app, 'alice@acme.com', 'acme-secret-pass-1');
+  assert.ok(ck, 'portal login sets cookie');
+  const list = await request(app).get('/api/portal/engagements').set('Cookie', ck);
+  assert.equal(list.status, 200); assert.equal(list.body.items.length, 1);
+  assert.equal(list.body.items[0].severity_counts.critical, 1);
+  const det = await request(app).get(`/api/portal/engagements/${e1}`).set('Cookie', ck);
+  assert.equal(det.status, 200); assert.equal(det.body.findings[0].title, 'SQLi on /login');
+});
+
+test('portal: strict tenant isolation across clients', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const { e1 } = await provision(app, admin);
+  const bob = await portalLogin(app, 'bob@globex.com', 'globex-secret-pw-1');
+  const cross = await request(app).get(`/api/portal/engagements/${e1}`).set('Cookie', bob);
+  assert.equal(cross.status, 404, 'other tenant engagement must be invisible');
+  const own = await request(app).get('/api/portal/engagements').set('Cookie', bob);
+  assert.equal(own.body.items.length, 0);
+});
+
+test('portal: admin cookie rejected on portal, portal cookie rejected on admin (audience separation)', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  await provision(app, admin);
+  const asPortal = await request(app).get('/api/portal/engagements').set('Cookie', admin);
+  assert.equal(asPortal.status, 401);
+  const ck = await portalLogin(app, 'alice@acme.com', 'acme-secret-pass-1');
+  // portal cookie name differs; simulate cross-use by renaming it to the admin cookie
+  const forged = ck.map((c) => c.replace('skelion_portal=', 'skelion_session='));
+  const asAdmin = await request(app).get('/api/admin/stats').set('Cookie', forged);
+  assert.equal(asAdmin.status, 401, 'portal token must not pass admin audience check');
+});
+
+test('portal: password change enforces current password + min length', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  await provision(app, admin);
+  const ck = await portalLogin(app, 'alice@acme.com', 'acme-secret-pass-1');
+  const wrong = await request(app).post('/api/portal/change-password').set('Cookie', ck).send({ current: 'nope', next: 'a-new-long-password-1' });
+  assert.equal(wrong.status, 401);
+  const short = await request(app).post('/api/portal/change-password').set('Cookie', ck).send({ current: 'acme-secret-pass-1', next: 'short' });
+  assert.equal(short.status, 400);
+  const ok = await request(app).post('/api/portal/change-password').set('Cookie', ck).send({ current: 'acme-secret-pass-1', next: 'a-new-long-password-1' });
+  assert.equal(ok.status, 200);
+  const relog = await request(app).post('/api/portal/login').send({ email: 'alice@acme.com', password: 'a-new-long-password-1' });
+  assert.equal(relog.status, 200);
+});
+
+test('portal: finding lifecycle sets and clears resolved_at', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const { e1 } = await provision(app, admin);
+  const f = (await request(app).get(`/api/admin/engagements/${e1}/findings`).set('Cookie', admin)).body.items[0];
+  const upd = { engagement_id: e1, title: f.title, severity: 'critical', cvss: 9.8, status: 'resolved', description: f.description, impact: f.impact, remediation: f.remediation };
+  await request(app).put(`/api/admin/findings/${f.id}`).set('Cookie', admin).send(upd);
+  let cur = (await request(app).get(`/api/admin/engagements/${e1}/findings`).set('Cookie', admin)).body.items[0];
+  assert.ok(cur.resolved_at, 'resolved_at set when resolved');
+  await request(app).put(`/api/admin/findings/${f.id}`).set('Cookie', admin).send({ ...upd, status: 'open' });
+  cur = (await request(app).get(`/api/admin/engagements/${e1}/findings`).set('Cookie', admin)).body.items[0];
+  assert.equal(cur.resolved_at, null, 'resolved_at cleared when reopened');
+});

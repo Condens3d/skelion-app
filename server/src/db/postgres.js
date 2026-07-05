@@ -36,6 +36,46 @@ export async function createPostgresStore(config, log) {
       published_at TIMESTAMPTZ
     );
     CREATE INDEX IF NOT EXISTS idx_posts_pub ON posts (published, published_at DESC);
+    CREATE TABLE IF NOT EXISTS clients (
+      id BIGSERIAL PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS client_users (
+      id BIGSERIAL PRIMARY KEY,
+      client_id BIGINT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      email TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL DEFAULT '',
+      password_hash TEXT NOT NULL,
+      last_login TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS engagements (
+      id BIGSERIAL PRIMARY KEY,
+      client_id BIGINT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'pentest',
+      status TEXT NOT NULL DEFAULT 'scoping',
+      summary TEXT NOT NULL DEFAULT '',
+      start_date TEXT NOT NULL DEFAULT '',
+      end_date TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS findings (
+      id BIGSERIAL PRIMARY KEY,
+      engagement_id BIGINT NOT NULL REFERENCES engagements(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      severity TEXT NOT NULL DEFAULT 'medium',
+      cvss REAL,
+      status TEXT NOT NULL DEFAULT 'open',
+      description TEXT NOT NULL DEFAULT '',
+      impact TEXT NOT NULL DEFAULT '',
+      remediation TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      resolved_at TIMESTAMPTZ
+    );
     CREATE TABLE IF NOT EXISTS assessments (
       id BIGSERIAL PRIMARY KEY,
       name TEXT NOT NULL DEFAULT '', organization TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '',
@@ -113,6 +153,66 @@ export async function createPostgresStore(config, log) {
       ]);
       return { total: total.rows[0].n, items: items.rows.map(mapPostFull) };
     },
+    // ---- client portal ----
+    async createClient(name) {
+      const r = await pool.query('INSERT INTO clients (name) VALUES ($1) RETURNING id', [name]);
+      return Number(r.rows[0].id);
+    },
+    async listClients() {
+      const r = await pool.query(`SELECT c.id, c.name, c.created_at,
+          (SELECT COUNT(*)::int FROM client_users u WHERE u.client_id=c.id) users,
+          (SELECT COUNT(*)::int FROM engagements e WHERE e.client_id=c.id) engagements
+        FROM clients c ORDER BY c.name`);
+      return r.rows;
+    },
+    async deleteClient(id) { return (await pool.query('DELETE FROM clients WHERE id=$1', [id])).rowCount > 0; },
+    async createClientUser(u) {
+      const r = await pool.query('INSERT INTO client_users (client_id,email,name,password_hash) VALUES ($1,$2,$3,$4) RETURNING id',
+        [u.client_id, u.email.toLowerCase(), u.name, u.password_hash]);
+      return Number(r.rows[0].id);
+    },
+    async findClientUserByEmail(email) {
+      const r = await pool.query('SELECT * FROM client_users WHERE email=$1', [email.toLowerCase()]);
+      return r.rows[0] ?? null;
+    },
+    async listClientUsers(clientId) {
+      const r = await pool.query('SELECT id,client_id,email,name,last_login,created_at FROM client_users WHERE client_id=$1 ORDER BY email', [clientId]);
+      return r.rows;
+    },
+    async deleteClientUser(id) { return (await pool.query('DELETE FROM client_users WHERE id=$1', [id])).rowCount > 0; },
+    async setClientUserPassword(id, hash) { return (await pool.query('UPDATE client_users SET password_hash=$1 WHERE id=$2', [hash, id])).rowCount > 0; },
+    async touchClientLogin(id) { await pool.query('UPDATE client_users SET last_login=now() WHERE id=$1', [id]); },
+    async createEngagement(e) {
+      const r = await pool.query('INSERT INTO engagements (client_id,title,type,status,summary,start_date,end_date) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
+        [e.client_id, e.title, e.type, e.status, e.summary, e.start_date, e.end_date]);
+      return Number(r.rows[0].id);
+    },
+    async updateEngagement(id, e) {
+      return (await pool.query('UPDATE engagements SET title=$1,type=$2,status=$3,summary=$4,start_date=$5,end_date=$6,updated_at=now() WHERE id=$7',
+        [e.title, e.type, e.status, e.summary, e.start_date, e.end_date, id])).rowCount > 0;
+    },
+    async deleteEngagement(id) { return (await pool.query('DELETE FROM engagements WHERE id=$1', [id])).rowCount > 0; },
+    async getEngagement(id) { return (await pool.query('SELECT * FROM engagements WHERE id=$1', [id])).rows[0] ?? null; },
+    async listEngagementsByClient(clientId) {
+      return (await pool.query('SELECT * FROM engagements WHERE client_id=$1 ORDER BY created_at DESC', [clientId])).rows;
+    },
+    async createFinding(f) {
+      const r = await pool.query('INSERT INTO findings (engagement_id,title,severity,cvss,status,description,impact,remediation) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
+        [f.engagement_id, f.title, f.severity, f.cvss ?? null, f.status, f.description, f.impact, f.remediation]);
+      return Number(r.rows[0].id);
+    },
+    async updateFinding(id, f) {
+      return (await pool.query(`UPDATE findings SET title=$1,severity=$2,cvss=$3,status=$4,description=$5,impact=$6,remediation=$7,updated_at=now(),
+          resolved_at=CASE WHEN $4 IN ('resolved','closed') AND resolved_at IS NULL THEN now() WHEN $4 NOT IN ('resolved','closed') THEN NULL ELSE resolved_at END
+        WHERE id=$8`,
+        [f.title, f.severity, f.cvss ?? null, f.status, f.description, f.impact, f.remediation, id])).rowCount > 0;
+    },
+    async deleteFinding(id) { return (await pool.query('DELETE FROM findings WHERE id=$1', [id])).rowCount > 0; },
+    async getFinding(id) { return (await pool.query('SELECT * FROM findings WHERE id=$1', [id])).rows[0] ?? null; },
+    async listFindingsByEngagement(engId) {
+      return (await pool.query(`SELECT * FROM findings WHERE engagement_id=$1 ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END, id`, [engId])).rows;
+    },
+    // ---- assessments ----
     async createAssessment(a) {
       const r = await pool.query(
         `INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,

@@ -169,3 +169,29 @@ Postgres is the fastest path. Render and Railway both work well:
 - Run the domain through securityheaders.com and Mozilla Observatory.
 - Configure database backups (managed platforms do this; on a VPS, schedule
   `pg_dump`).
+
+---
+
+## 5. Client portal operations
+
+The portal at `/portal` is a separate trust boundary from `/admin`: its own
+session cookie, its own token audience, and every query is scoped to the
+client organization inside the verified session. There is no self-signup.
+
+Workflow to onboard a client:
+
+1. Sign in at `/admin`, open the **Clients** tab.
+2. Create the client organization.
+3. Create a portal user under it with a strong temporary password (12+ chars).
+   Share that password through a secure channel (never email it alongside the
+   username), and tell the client to change it on first login. The portal has
+   a built-in change-password flow.
+4. Create the engagement (type, status, dates, a Markdown summary the client
+   will see), then add findings as the work progresses: severity, optional
+   CVSS, status, description, business impact, remediation. Findings appear in
+   the client's portal immediately; when you mark one resolved, the resolution
+   date is recorded automatically.
+
+Deliberate v1 limits: no binary file uploads (managed hosting filesystems are
+not reliably persistent; link out to secured storage for report PDFs), and no
+client-facing email notifications yet.

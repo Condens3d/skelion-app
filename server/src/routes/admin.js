@@ -1,6 +1,7 @@
+import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import { requireAuth } from '../auth.js';
-import { PostSchema } from '../validation.js';
+import { PostSchema, ClientSchema, ClientUserSchema, EngagementSchema, FindingSchema } from '../validation.js';
 
 /** /api/admin — all endpoints require a valid session. */
 export function adminRouter(store, config, mailer) {
@@ -131,6 +132,103 @@ export function adminRouter(store, config, mailer) {
     if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'bad_id' });
     try {
       const ok = await store.deleteSubscriber(id);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+
+  // ---- client portal management ----
+  router.get('/clients', async (_req, res, next) => {
+    try { res.json({ items: await store.listClients() }); } catch (e) { next(e); }
+  });
+  router.post('/clients', async (req, res, next) => {
+    const p = ClientSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed' });
+    try { res.status(201).json({ id: await store.createClient(p.data.name) }); }
+    catch (e) { if (/unique/i.test(String(e.message))) return res.status(409).json({ error: 'name_exists' }); next(e); }
+  });
+  router.delete('/clients/:id', async (req, res, next) => {
+    try {
+      const ok = await store.deleteClient(Number(req.params.id));
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  router.get('/clients/:id/users', async (req, res, next) => {
+    try { res.json({ items: await store.listClientUsers(Number(req.params.id)) }); } catch (e) { next(e); }
+  });
+  router.post('/client-users', async (req, res, next) => {
+    const p = ClientUserSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed', fields: p.error.flatten().fieldErrors });
+    try {
+      const id = await store.createClientUser({ ...p.data, password_hash: bcrypt.hashSync(p.data.password, 12) });
+      res.status(201).json({ id });
+    } catch (e) { if (/unique/i.test(String(e.message))) return res.status(409).json({ error: 'email_exists' }); next(e); }
+  });
+  router.post('/client-users/:id/reset-password', async (req, res, next) => {
+    const pw = String(req.body?.password || '');
+    if (pw.length < 12) return res.status(400).json({ error: 'validation_failed', hint: 'min 12 chars' });
+    try {
+      const ok = await store.setClientUserPassword(Number(req.params.id), bcrypt.hashSync(pw, 12));
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+  router.delete('/client-users/:id', async (req, res, next) => {
+    try {
+      const ok = await store.deleteClientUser(Number(req.params.id));
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  router.get('/clients/:id/engagements', async (req, res, next) => {
+    try { res.json({ items: await store.listEngagementsByClient(Number(req.params.id)) }); } catch (e) { next(e); }
+  });
+  router.post('/engagements', async (req, res, next) => {
+    const p = EngagementSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed', fields: p.error.flatten().fieldErrors });
+    try { res.status(201).json({ id: await store.createEngagement(p.data) }); } catch (e) { next(e); }
+  });
+  router.put('/engagements/:id', async (req, res, next) => {
+    const p = EngagementSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed', fields: p.error.flatten().fieldErrors });
+    try {
+      const ok = await store.updateEngagement(Number(req.params.id), p.data);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+  router.delete('/engagements/:id', async (req, res, next) => {
+    try {
+      const ok = await store.deleteEngagement(Number(req.params.id));
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  router.get('/engagements/:id/findings', async (req, res, next) => {
+    try { res.json({ items: await store.listFindingsByEngagement(Number(req.params.id)) }); } catch (e) { next(e); }
+  });
+  router.post('/findings', async (req, res, next) => {
+    const p = FindingSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed', fields: p.error.flatten().fieldErrors });
+    try { res.status(201).json({ id: await store.createFinding(p.data) }); } catch (e) { next(e); }
+  });
+  router.put('/findings/:id', async (req, res, next) => {
+    const p = FindingSchema.safeParse(req.body);
+    if (!p.success) return res.status(400).json({ error: 'validation_failed', fields: p.error.flatten().fieldErrors });
+    try {
+      const ok = await store.updateFinding(Number(req.params.id), p.data);
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+  router.delete('/findings/:id', async (req, res, next) => {
+    try {
+      const ok = await store.deleteFinding(Number(req.params.id));
       if (!ok) return res.status(404).json({ error: 'not_found' });
       res.json({ ok: true });
     } catch (e) { next(e); }

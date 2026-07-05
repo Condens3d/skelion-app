@@ -7,6 +7,7 @@ import { contactRouter } from './routes/contact.js';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { publicApiRouter } from './routes/publicApi.js';
+import { portalRouter } from './routes/portal.js';
 import { createMailer } from './mailer.js';
 
 const SITE = process.env.PUBLIC_ORIGIN || 'https://skeliontech.com';
@@ -44,6 +45,7 @@ export function createApp(store, config, log = console) {
   app.use('/api/auth', authRouter(store, config));
   app.use('/api/v1', publicApiRouter(store, mailer));
   app.use('/api/admin', adminRouter(store, config, mailer));
+  app.use('/api/portal', portalRouter(store, config));
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));
 
   // ---- security.txt (RFC 9116) ----

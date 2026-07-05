@@ -165,3 +165,60 @@ export const adminExtras = {
   timeline: () => fetch('/api/admin/timeline').then(json<{ days: TimelineDay[] }>),
   testEmail: () => fetch('/api/admin/test-email', { method: 'POST' }).then(json<{ ok: boolean; to?: string; error?: string }>),
 };
+
+// ---- client portal ----
+export interface PortalEngagement {
+  id: number; client_id: number; title: string; type: string; status: string;
+  summary: string; start_date: string; end_date: string; created_at: string; updated_at: string;
+  findings_total: number; findings_open: number;
+  severity_counts: Record<'critical' | 'high' | 'medium' | 'low' | 'info', number>;
+}
+export interface Finding {
+  id: number; engagement_id: number; title: string; severity: string; cvss: number | null;
+  status: string; description: string; impact: string; remediation: string;
+  created_at: string; updated_at: string; resolved_at: string | null;
+}
+export interface AdminClient { id: number; name: string; created_at: string; users: number; engagements: number }
+export interface AdminClientUser { id: number; client_id: number; email: string; name: string; last_login: string | null; created_at: string }
+export interface AdminEngagementRow {
+  id: number; client_id: number; title: string; type: string; status: string;
+  summary: string; start_date: string; end_date: string; created_at: string; updated_at: string;
+}
+export interface EngagementInput {
+  client_id: number; title: string; type: string; status: string; summary: string; start_date: string; end_date: string;
+}
+export interface FindingInput {
+  engagement_id: number; title: string; severity: string; cvss: number | null; status: string;
+  description: string; impact: string; remediation: string;
+}
+
+export const portalApi = {
+  me: () => fetch('/api/portal/me').then((r) => (r.ok ? (r.json() as Promise<{ email: string; name: string }>) : null)),
+  login: (email: string, password: string) =>
+    fetch('/api/portal/login', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ email, password }) }).then(json<{ ok: boolean; email: string; name: string }>),
+  logout: () => fetch('/api/portal/logout', { method: 'POST' }),
+  engagements: () => fetch('/api/portal/engagements').then(json<{ items: PortalEngagement[] }>),
+  engagement: (id: number) => fetch(`/api/portal/engagements/${id}`).then(json<AdminEngagementRow & { findings: Finding[] }>),
+  changePassword: (current: string, next: string) =>
+    fetch('/api/portal/change-password', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ current, next }) }).then(json<{ ok: boolean }>),
+};
+
+export const adminPortal = {
+  clients: () => fetch('/api/admin/clients').then(json<{ items: AdminClient[] }>),
+  createClient: (name: string) => fetch('/api/admin/clients', { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ name }) }).then(json<{ id: number }>),
+  deleteClient: (id: number) => fetch(`/api/admin/clients/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
+  users: (clientId: number) => fetch(`/api/admin/clients/${clientId}/users`).then(json<{ items: AdminClientUser[] }>),
+  createUser: (u: { client_id: number; email: string; name: string; password: string }) =>
+    fetch('/api/admin/client-users', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(u) }).then(json<{ id: number }>),
+  resetPassword: (id: number, password: string) =>
+    fetch(`/api/admin/client-users/${id}/reset-password`, { method: 'POST', headers: jsonHeaders, body: JSON.stringify({ password }) }).then(json<{ ok: boolean }>),
+  deleteUser: (id: number) => fetch(`/api/admin/client-users/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
+  engagements: (clientId: number) => fetch(`/api/admin/clients/${clientId}/engagements`).then(json<{ items: AdminEngagementRow[] }>),
+  createEngagement: (e: EngagementInput) => fetch('/api/admin/engagements', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(e) }).then(json<{ id: number }>),
+  updateEngagement: (id: number, e: EngagementInput) => fetch(`/api/admin/engagements/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(e) }).then(json<{ ok: boolean }>),
+  deleteEngagement: (id: number) => fetch(`/api/admin/engagements/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
+  findings: (engId: number) => fetch(`/api/admin/engagements/${engId}/findings`).then(json<{ items: Finding[] }>),
+  createFinding: (f: FindingInput) => fetch('/api/admin/findings', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(f) }).then(json<{ id: number }>),
+  updateFinding: (id: number, f: FindingInput) => fetch(`/api/admin/findings/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(f) }).then(json<{ ok: boolean }>),
+  deleteFinding: (id: number) => fetch(`/api/admin/findings/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
+};

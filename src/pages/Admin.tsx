@@ -1,4 +1,5 @@
 import { adminExtras, AdminAssessmentRow, TimelineDay } from '../lib/api';
+import ClientsManager from '../components/admin/ClientsManager';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSeo } from '../lib/seo';
@@ -16,7 +17,7 @@ import {
 
 const field = 'w-full neu-inset text-paper font-body text-[.92rem] px-[14px] py-[11px] focus:outline-none border-0';
 const label = 'font-mono text-[.72rem] text-slate tracking-[.1em] uppercase block mb-[6px]';
-type Tab = 'overview' | 'insights' | 'submissions' | 'assessments' | 'subscribers';
+type Tab = 'overview' | 'insights' | 'submissions' | 'assessments' | 'clients' | 'subscribers';
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -79,6 +80,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
     { id: 'insights', label: t('admin.tabInsights') },
     { id: 'submissions', label: t('admin.tabSubmissions') },
     { id: 'assessments', label: t('admin.tabAssessments') },
+    { id: 'clients', label: t('admin.tabClients') },
     { id: 'subscribers', label: t('admin.tabSubscribers') },
   ];
   async function logout() { await adminApi.logout(); onLogout(); }
@@ -99,6 +101,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
       {tab === 'insights' && <InsightsManager />}
       {tab === 'submissions' && <SubmissionsList />}
       {tab === 'assessments' && <AssessmentsList />}
+      {tab === 'clients' && <ClientsManager />}
       {tab === 'subscribers' && <SubscribersList />}
     </div>
   );

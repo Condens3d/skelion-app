@@ -48,3 +48,30 @@ export const AssessmentSchema = z.object({
       { message: 'answers must cover exactly the defined question set' }
     ),
 });
+
+export const ClientSchema = z.object({ name: z.string().trim().min(2).max(160) });
+export const ClientUserSchema = z.object({
+  client_id: z.number().int().positive(),
+  email: z.string().trim().email().max(254),
+  name: z.string().trim().max(120).optional().default(''),
+  password: z.string().min(12).max(200),
+});
+export const EngagementSchema = z.object({
+  client_id: z.number().int().positive(),
+  title: z.string().trim().min(2).max(200),
+  type: z.enum(['pentest', 'grc', 'vciso', 'training', 'physical', 'other']).default('pentest'),
+  status: z.enum(['scoping', 'active', 'reporting', 'remediation', 'closed']).default('scoping'),
+  summary: z.string().max(20000).optional().default(''),
+  start_date: z.string().max(10).optional().default(''),
+  end_date: z.string().max(10).optional().default(''),
+});
+export const FindingSchema = z.object({
+  engagement_id: z.number().int().positive(),
+  title: z.string().trim().min(2).max(240),
+  severity: z.enum(['critical', 'high', 'medium', 'low', 'info']).default('medium'),
+  cvss: z.number().min(0).max(10).nullable().optional().default(null),
+  status: z.enum(['open', 'in_remediation', 'resolved', 'accepted_risk', 'closed']).default('open'),
+  description: z.string().max(40000).optional().default(''),
+  impact: z.string().max(20000).optional().default(''),
+  remediation: z.string().max(20000).optional().default(''),
+});

@@ -39,6 +39,46 @@ export async function createSqliteStore(config, log) {
       published_at TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_posts_pub ON posts(published, published_at DESC);
+    CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    CREATE TABLE IF NOT EXISTS client_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      email TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL DEFAULT '',
+      password_hash TEXT NOT NULL,
+      last_login TEXT,
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    CREATE TABLE IF NOT EXISTS engagements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'pentest',
+      status TEXT NOT NULL DEFAULT 'scoping',
+      summary TEXT NOT NULL DEFAULT '',
+      start_date TEXT NOT NULL DEFAULT '',
+      end_date TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    CREATE TABLE IF NOT EXISTS findings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      engagement_id INTEGER NOT NULL REFERENCES engagements(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      severity TEXT NOT NULL DEFAULT 'medium',
+      cvss REAL,
+      status TEXT NOT NULL DEFAULT 'open',
+      description TEXT NOT NULL DEFAULT '',
+      impact TEXT NOT NULL DEFAULT '',
+      remediation TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      resolved_at TEXT
+    );
     CREATE TABLE IF NOT EXISTS assessments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT DEFAULT '', organization TEXT DEFAULT '', email TEXT DEFAULT '',
@@ -74,6 +114,28 @@ export async function createSqliteStore(config, log) {
     listAll: db.prepare('SELECT id,slug,tag,title_en,title_fr,published,created_at,updated_at,published_at FROM posts ORDER BY updated_at DESC, id DESC'),
     countAllPosts: db.prepare('SELECT COUNT(*) AS n FROM posts'),
     // subscribers
+    insClient: db.prepare('INSERT INTO clients (name) VALUES (?)'),
+    listClients: db.prepare(`SELECT c.id, c.name, c.created_at,
+        (SELECT COUNT(*) FROM client_users u WHERE u.client_id=c.id) users,
+        (SELECT COUNT(*) FROM engagements e WHERE e.client_id=c.id) engagements
+      FROM clients c ORDER BY c.name`),
+    delClient: db.prepare('DELETE FROM clients WHERE id=?'),
+    insCU: db.prepare('INSERT INTO client_users (client_id,email,name,password_hash) VALUES (?,?,?,?)'),
+    cuByEmail: db.prepare('SELECT * FROM client_users WHERE email=?'),
+    listCU: db.prepare('SELECT id,client_id,email,name,last_login,created_at FROM client_users WHERE client_id=? ORDER BY email'),
+    delCU: db.prepare('DELETE FROM client_users WHERE id=?'),
+    setCUPass: db.prepare('UPDATE client_users SET password_hash=? WHERE id=?'),
+    touchCU: db.prepare(`UPDATE client_users SET last_login=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?`),
+    insEng: db.prepare('INSERT INTO engagements (client_id,title,type,status,summary,start_date,end_date) VALUES (?,?,?,?,?,?,?)'),
+    updEng: db.prepare(`UPDATE engagements SET title=?,type=?,status=?,summary=?,start_date=?,end_date=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?`),
+    delEng: db.prepare('DELETE FROM engagements WHERE id=?'),
+    engById: db.prepare('SELECT * FROM engagements WHERE id=?'),
+    engsByClient: db.prepare('SELECT * FROM engagements WHERE client_id=? ORDER BY created_at DESC'),
+    insFind: db.prepare('INSERT INTO findings (engagement_id,title,severity,cvss,status,description,impact,remediation) VALUES (?,?,?,?,?,?,?,?)'),
+    updFind: db.prepare(`UPDATE findings SET title=?,severity=?,cvss=?,status=?,description=?,impact=?,remediation=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'),resolved_at=CASE WHEN ? IN ('resolved','closed') AND resolved_at IS NULL THEN strftime('%Y-%m-%dT%H:%M:%fZ','now') WHEN ? NOT IN ('resolved','closed') THEN NULL ELSE resolved_at END WHERE id=?`),
+    delFind: db.prepare('DELETE FROM findings WHERE id=?'),
+    findById: db.prepare('SELECT * FROM findings WHERE id=?'),
+    findsByEng: db.prepare(`SELECT * FROM findings WHERE engagement_id=? ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END, id`),
     insertAssessment: db.prepare(`INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES (?,?,?,?,?,?,?,?)`),
     listAssessments: db.prepare(`SELECT id,name,organization,email,domain_scores,total_score,grade,locale,created_at FROM assessments ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`),
     countAssessments: db.prepare('SELECT COUNT(*) n FROM assessments'),
@@ -114,6 +176,27 @@ export async function createSqliteStore(config, log) {
     async listPublishedPosts(limit, offset) { return { total: q.countPub.get().n, items: q.listPub.all(limit, offset) }; },
     async listAllPosts() { return { total: q.countAllPosts.get().n, items: q.listAll.all() }; },
     // subscribers
+    // ---- client portal ----
+    async createClient(name) { return Number(q.insClient.run(name).lastInsertRowid); },
+    async listClients() { return q.listClients.all(); },
+    async deleteClient(id) { return q.delClient.run(id).changes > 0; },
+    async createClientUser(u) { return Number(q.insCU.run(u.client_id, u.email.toLowerCase(), u.name, u.password_hash).lastInsertRowid); },
+    async findClientUserByEmail(email) { return q.cuByEmail.get(email.toLowerCase()) ?? null; },
+    async listClientUsers(clientId) { return q.listCU.all(clientId); },
+    async deleteClientUser(id) { return q.delCU.run(id).changes > 0; },
+    async setClientUserPassword(id, hash) { return q.setCUPass.run(hash, id).changes > 0; },
+    async touchClientLogin(id) { q.touchCU.run(id); },
+    async createEngagement(e) { return Number(q.insEng.run(e.client_id,e.title,e.type,e.status,e.summary,e.start_date,e.end_date).lastInsertRowid); },
+    async updateEngagement(id, e) { return q.updEng.run(e.title,e.type,e.status,e.summary,e.start_date,e.end_date,id).changes > 0; },
+    async deleteEngagement(id) { return q.delEng.run(id).changes > 0; },
+    async getEngagement(id) { return q.engById.get(id) ?? null; },
+    async listEngagementsByClient(clientId) { return q.engsByClient.all(clientId); },
+    async createFinding(f) { return Number(q.insFind.run(f.engagement_id,f.title,f.severity,f.cvss ?? null,f.status,f.description,f.impact,f.remediation).lastInsertRowid); },
+    async updateFinding(id, f) { return q.updFind.run(f.title,f.severity,f.cvss ?? null,f.status,f.description,f.impact,f.remediation,f.status,f.status,id).changes > 0; },
+    async deleteFinding(id) { return q.delFind.run(id).changes > 0; },
+    async getFinding(id) { return q.findById.get(id) ?? null; },
+    async listFindingsByEngagement(engId) { return q.findsByEng.all(engId); },
+    // ---- assessments ----
     async createAssessment(a) { return Number(q.insertAssessment.run(a.name,a.organization,a.email,JSON.stringify(a.answers),JSON.stringify(a.domain_scores),a.total_score,a.grade,a.locale).lastInsertRowid); },
     async listAssessments(limit, offset) {
       const items = q.listAssessments.all(limit, offset).map(r => ({ ...r, domain_scores: JSON.parse(r.domain_scores) }));

@@ -30,6 +30,7 @@ export default function Footer() {
             <FootLink to="/about">{t('footer.about')}</FootLink>
             <FootLink to="/faq">{t('footer.faq')}</FootLink>
             <FootLink to="/contact">{t('footer.contact')}</FootLink>
+            <FootLink to="/portal">{t('footer.portal')}</FootLink>
             <li>
               <a href="tel:+237694429113" className="!text-paper-dim font-mono text-[.82rem] hover:!text-cyan before:content-['>_'] before:text-paper-dim">
                 {t('footer.call')}
