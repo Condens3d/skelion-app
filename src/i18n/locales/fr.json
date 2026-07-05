@@ -1080,7 +1080,16 @@
       "f_remediation": "Remédiation (Markdown)",
       "noFindings": "aucun constat pour l'instant"
     },
-    "tabClients": "Clients"
+    "tabClients": "Clients",
+    "ops": {
+      "title": "état du système",
+      "check": "// vérifier l'état du backend",
+      "enterKey": "Clé opérateur (OPS_KEY) :",
+      "badKey": "Clé opérateur invalide.",
+      "sendTest": "envoyer un e-mail de test",
+      "mailOk": "e-mail de test envoyé à {{to}}",
+      "mailFail": "échec de l'envoi, vérifiez les paramètres SMTP"
+    }
   },
   "insights": {
     "seoTitle": "Analyses | Skelion Enterprises",

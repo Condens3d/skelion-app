@@ -14,9 +14,11 @@ const SITE = process.env.PUBLIC_ORIGIN || 'https://skeliontech.com';
 const SEC_CONTACT = process.env.SECURITY_CONTACT || 'info@skeliontech.com';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function createApp(store, config, log = console) {
+export function createApp(store, config, log = console, mailer = null) {
   const app = express();
-  const mailer = createMailer(config, log);
+  // Reuse the mailer verified at boot when provided; otherwise build one
+  // (keeps existing tests, which call createApp without a mailer, working).
+  mailer = mailer || createMailer(config, log);
   app.disable('x-powered-by');
   if (config.trustProxy) app.set('trust proxy', 1);
 
@@ -41,6 +43,30 @@ export function createApp(store, config, log = console) {
 
   // ---- API ----
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver, api: 'v1' }));
+
+  // Secure operator diagnostics: verifies DB + SMTP live. Gated by OPS_KEY so
+  // it is not public. Call with header  x-ops-key: <OPS_KEY>  or ?ops_key=...
+  app.get('/api/ops/diagnostics', async (req, res) => {
+    const key = req.get('x-ops-key') || req.query.ops_key;
+    if (!config.opsKey || key !== config.opsKey) return res.status(404).json({ error: 'not_found' });
+    const out = { time: new Date().toISOString(), env: config.isProd ? 'production' : 'development' };
+    try { out.database = { driver: store.driver, connected: await store.ping() }; }
+    catch (e) { out.database = { driver: store.driver, connected: false, error: e.message }; }
+    try {
+      const [subs, clients] = await Promise.all([store.stats().catch(() => null), store.listClients().catch(() => null)]);
+      out.data = { submissions: subs?.submissions ?? null, clients: Array.isArray(clients) ? clients.length : null };
+    } catch { /* non-fatal */ }
+    out.mail = await mailer.verify();
+    res.json(out);
+  });
+
+  // One-click SMTP test from the diagnostics key (sends a real email).
+  app.post('/api/ops/test-email', async (req, res) => {
+    const key = req.get('x-ops-key') || req.query.ops_key;
+    if (!config.opsKey || key !== config.opsKey) return res.status(404).json({ error: 'not_found' });
+    const result = await mailer.sendTest();
+    res.status(result.ok ? 200 : 502).json(result);
+  });
   app.use('/api/contact', contactRouter(store, mailer));
   app.use('/api/auth', authRouter(store, config));
   app.use('/api/v1', publicApiRouter(store, mailer));

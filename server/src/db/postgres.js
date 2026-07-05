@@ -274,6 +274,7 @@ export async function createPostgresStore(config, log) {
         (SELECT COUNT(*)::int FROM subscribers) AS subscribers`);
       return r.rows[0];
     },
+    async ping() { const r = await pool.query('SELECT 1 AS ok'); return r.rows[0].ok === 1; },
     async close() { await pool.end(); },
   };
 }

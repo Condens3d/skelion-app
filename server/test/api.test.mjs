@@ -198,7 +198,7 @@ test('admin test-email reports SMTP not configured', async (t) => {
   const cookie = await login(app, store);
   const r = await request(app).post('/api/admin/test-email').set('Cookie', cookie);
   assert.equal(r.status, 502);
-  assert.match(r.body.error, /SMTP is not configured/);
+  assert.match(r.body.error, /SMTP not configured/);
 });
 
 test('contact returns a trackable reference', async (t) => {

@@ -1080,7 +1080,16 @@
       "f_remediation": "Remediation (Markdown)",
       "noFindings": "no findings yet"
     },
-    "tabClients": "Clients"
+    "tabClients": "Clients",
+    "ops": {
+      "title": "system status",
+      "check": "// check backend status",
+      "enterKey": "Operator key (OPS_KEY):",
+      "badKey": "Invalid operator key.",
+      "sendTest": "send test email",
+      "mailOk": "test email sent to {{to}}",
+      "mailFail": "send failed, check SMTP settings"
+    }
   },
   "insights": {
     "seoTitle": "Insights | Skelion Enterprises",

@@ -1,4 +1,4 @@
-import { adminExtras, AdminAssessmentRow, TimelineDay } from '../lib/api';
+import { adminExtras, AdminAssessmentRow, TimelineDay, opsApi } from '../lib/api';
 import ClientsManager from '../components/admin/ClientsManager';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +68,62 @@ function Login({ onAuth }: { onAuth: (email: string) => void }) {
       <button type="submit" disabled={busy} className="btn btn-primary neu-btn justify-center disabled:opacity-50">
         {busy ? t('admin.loginBusy') : t('admin.loginBtn')}</button>
       {error && <span className="font-mono text-[.78rem] text-termred" role="alert">{error}</span>}
+      <OpsPanel />
     </form>
+  );
+}
+
+// Operator diagnostics inside the login gate. Reads OPS_KEY from the URL
+// (?ops=KEY) or a prompt, and shows live DB + SMTP health without logging in.
+function OpsPanel() {
+  const { t } = useTranslation();
+  const [key, setKey] = useState('');
+  const [diag, setDiag] = useState<import('../lib/api').Diagnostics | null>(null);
+  const [err, setErr] = useState('');
+  const [mailMsg, setMailMsg] = useState('');
+  useEffect(() => {
+    const u = new URL(window.location.href);
+    const k = u.searchParams.get('ops');
+    if (k) setKey(k);
+  }, []);
+  async function run(k: string) {
+    setErr(''); setDiag(null);
+    try { setDiag(await opsApi.diagnostics(k)); }
+    catch { setErr(t('admin.ops.badKey')); }
+  }
+  useEffect(() => { if (key) run(key); /* eslint-disable-next-line */ }, [key]);
+  async function testMail() {
+    setMailMsg('...');
+    try { const r = await opsApi.testEmail(key); setMailMsg(r.ok ? t('admin.ops.mailOk', { to: r.to }) : (r.error || t('admin.ops.mailFail'))); }
+    catch { setMailMsg(t('admin.ops.mailFail')); }
+  }
+  if (!key && !diag) {
+    return (
+      <button type="button" onClick={() => { const k = prompt(t('admin.ops.enterKey')); if (k) setKey(k); }}
+        className="font-mono text-[.72rem] text-slate hover:text-cyan self-start">{t('admin.ops.check')}</button>
+    );
+  }
+  const dot = (ok: boolean) => (ok ? 'text-teal' : 'text-termred');
+  return (
+    <div className="neu-inset p-4 rounded-brand font-mono text-[.74rem] grid gap-2 mt-1">
+      <span className="text-slate uppercase tracking-[.08em]">{t('admin.ops.title')}</span>
+      {err && <span className="text-termred">{err}</span>}
+      {diag && (
+        <>
+          <span className={dot(diag.database.connected)}>
+            db: {diag.database.driver} {diag.database.connected ? 'connected' : 'DOWN'} {diag.database.error ? `(${diag.database.error})` : ''}
+          </span>
+          {diag.data && <span className="text-paper-dim">data: {diag.data.submissions ?? '?'} messages · {diag.data.clients ?? '?'} clients</span>}
+          <span className={dot(diag.mail.ok)}>
+            mail: {diag.mail.ok ? `${diag.mail.host}:${diag.mail.port} -> ${diag.mail.to}` : `DISABLED (${diag.mail.error})`}
+          </span>
+          <div className="flex items-center gap-3 mt-1">
+            <button type="button" onClick={testMail} className="text-cyan hover:underline">{t('admin.ops.sendTest')}</button>
+            {mailMsg && <span className={mailMsg.includes('->') || mailMsg.includes('sent') ? 'text-teal' : 'text-paper-dim'}>{mailMsg}</span>}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

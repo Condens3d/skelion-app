@@ -234,6 +234,7 @@ export async function createSqliteStore(config, log) {
         subscribers: q.countSubscribers.get().n,
       };
     },
+    async ping() { db.prepare('SELECT 1').get(); return true; },
     async close() { db.close(); },
   };
 }

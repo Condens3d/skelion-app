@@ -222,3 +222,15 @@ export const adminPortal = {
   updateFinding: (id: number, f: FindingInput) => fetch(`/api/admin/findings/${id}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(f) }).then(json<{ ok: boolean }>),
   deleteFinding: (id: number) => fetch(`/api/admin/findings/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
 };
+
+// ---- operator diagnostics (OPS_KEY gated) ----
+export interface Diagnostics {
+  time: string; env: string;
+  database: { driver: string; connected: boolean; error?: string };
+  data?: { submissions: number | null; clients: number | null };
+  mail: { ok: boolean; error?: string; host?: string; port?: number; secure?: boolean; to?: string; from?: string };
+}
+export const opsApi = {
+  diagnostics: (key: string) => fetch('/api/ops/diagnostics', { headers: { 'x-ops-key': key } }).then(json<Diagnostics>),
+  testEmail: (key: string) => fetch('/api/ops/test-email', { method: 'POST', headers: { 'x-ops-key': key } }).then(json<{ ok: boolean; to?: string; error?: string }>),
+};
