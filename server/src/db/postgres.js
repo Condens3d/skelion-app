@@ -24,6 +24,7 @@ export async function createPostgresStore(config, log) {
     CREATE INDEX IF NOT EXISTS idx_submissions_created ON submissions (created_at DESC);
     CREATE TABLE IF NOT EXISTS admin_users (
       id BIGSERIAL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
+      mfa_secret TEXT, mfa_enabled BOOLEAN NOT NULL DEFAULT false, recovery_codes JSONB NOT NULL DEFAULT '[]'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     CREATE TABLE IF NOT EXISTS posts (
@@ -113,9 +114,17 @@ export async function createPostgresStore(config, log) {
     },
     async deleteSubmission(id) { return (await pool.query('DELETE FROM submissions WHERE id=$1', [id])).rowCount > 0; },
     async findAdminByEmail(email) {
-      const r = await pool.query('SELECT id,email,password_hash FROM admin_users WHERE email=$1', [email.toLowerCase()]);
+      const r = await pool.query('SELECT id,email,password_hash,mfa_secret,mfa_enabled,recovery_codes FROM admin_users WHERE email=$1', [email.toLowerCase()]);
       return r.rows[0] ?? null;
     },
+    async findAdminById(id) {
+      const r = await pool.query('SELECT id,email,password_hash,mfa_secret,mfa_enabled,recovery_codes FROM admin_users WHERE id=$1', [id]);
+      return r.rows[0] ?? null;
+    },
+    async setAdminMfaSecret(id, secret) { return (await pool.query('UPDATE admin_users SET mfa_secret=$1 WHERE id=$2', [secret, id])).rowCount > 0; },
+    async enableAdminMfa(id, recoveryHashes) { return (await pool.query('UPDATE admin_users SET mfa_enabled=true, recovery_codes=$1 WHERE id=$2', [JSON.stringify(recoveryHashes), id])).rowCount > 0; },
+    async disableAdminMfa(id) { return (await pool.query("UPDATE admin_users SET mfa_enabled=false, mfa_secret=NULL, recovery_codes='[]'::jsonb WHERE id=$1", [id])).rowCount > 0; },
+    async setAdminRecoveryCodes(id, recoveryHashes) { return (await pool.query('UPDATE admin_users SET recovery_codes=$1 WHERE id=$2', [JSON.stringify(recoveryHashes), id])).rowCount > 0; },
     async seedAdmin(email, password) {
       const c = await pool.query('SELECT COUNT(*)::int AS n FROM admin_users');
       if (c.rows[0].n > 0) return false;

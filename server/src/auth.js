@@ -66,3 +66,14 @@ export function requirePortalAuth(config) {
     }
   };
 }
+
+// ---- MFA step-up: short-lived token proving password was verified ----
+
+export function issueMfaPending(config, admin) {
+  return jwt.sign({ sub: admin.id, email: admin.email, aud: 'admin-mfa' }, config.sessionSecret, { expiresIn: '5m' });
+}
+
+export function verifyMfaPending(config, token) {
+  try { return jwt.verify(token, config.sessionSecret, { audience: 'admin-mfa' }); }
+  catch { return null; }
+}

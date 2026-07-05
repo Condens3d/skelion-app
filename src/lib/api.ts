@@ -76,6 +76,17 @@ export const adminApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     }),
+  loginMfa: (pending: string, token: string) =>
+    fetch('/api/auth/login/mfa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pending, token }),
+    }),
+  mfaSetup: () => fetch("/api/auth/mfa/setup", { method: "POST" }).then(json<{ secret: string; otpauth: string; qr_svg: string }>),
+  mfaEnable: (token: string) =>
+    fetch('/api/auth/mfa/enable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) }).then(json<{ ok: boolean; recovery_codes: string[] }>),
+  mfaDisable: (token: string) =>
+    fetch('/api/auth/mfa/disable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) }).then(json<{ ok: boolean }>),
   logout: () => fetch('/api/auth/logout', { method: 'POST' }),
   stats: () => fetch('/api/admin/stats').then(json<Stats>),
   submissions: (limit = 200) =>

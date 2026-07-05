@@ -79,3 +79,29 @@ admin console -> Clients tab -> create organization -> create a portal user with
 a temporary password -> share it securely. The client signs in at `/portal` and
 changes their password. If provisioning seemed to do nothing before, it was the
 database not being connected; the diagnostics above now make that obvious.
+
+## Two-factor authentication (admin)
+
+The admin console supports TOTP two-factor authentication (Google Authenticator,
+Authy, Microsoft Authenticator, 1Password). It is off by default so you are
+never locked out; enable it once you have your authenticator ready.
+
+To enable:
+
+1. Sign in at `/admin`, open the **Security** tab.
+2. Click Enable two-factor. Scan the QR code with your authenticator app, or
+   type the shown key manually.
+3. Enter the 6-digit code the app displays to confirm.
+4. Save the 10 recovery codes somewhere safe (a password manager). Each works
+   once if you lose your phone. They are shown only this once.
+
+After that, every admin login asks for your password, then the 6-digit code.
+
+If you lose your device: use a recovery code in place of the 6-digit code at
+login. If you run out of recovery codes and lose the device, you can clear MFA
+directly in the database by setting `mfa_enabled=false, mfa_secret=NULL` on your
+row in `admin_users` (Supabase SQL editor), then re-enrol.
+
+This hardens the console against phishing and credential stuffing, and maps to
+ISO 27001 Annex A 8.5 (secure authentication) and NIST CSF PR.AA. For a security
+firm, it is table stakes, and it is now in place.

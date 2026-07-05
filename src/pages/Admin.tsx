@@ -17,7 +17,7 @@ import {
 
 const field = 'w-full neu-inset text-paper font-body text-[.92rem] px-[14px] py-[11px] focus:outline-none border-0';
 const label = 'font-mono text-[.72rem] text-slate tracking-[.1em] uppercase block mb-[6px]';
-type Tab = 'overview' | 'insights' | 'submissions' | 'assessments' | 'clients' | 'subscribers';
+type Tab = 'overview' | 'insights' | 'submissions' | 'assessments' | 'clients' | 'subscribers' | 'security';
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -48,15 +48,50 @@ function Login({ onAuth }: { onAuth: (email: string) => void }) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<string | null>(null);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); setBusy(true); setError(null);
     const data = Object.fromEntries(new FormData(e.currentTarget).entries()) as Record<string, string>;
     try {
       const res = await adminApi.login(data.email, data.password);
-      if (res.ok) onAuth((await res.json()).email);
-      else if (res.status === 429) setError(t('admin.rateLimited'));
+      if (res.ok) {
+        const body = await res.json();
+        if (body.mfa_required) { setPending(body.pending); }
+        else onAuth(body.email);
+      } else if (res.status === 429) setError(t('admin.rateLimited'));
       else setError(t('admin.loginFailed'));
     } catch { setError(t('admin.serverDown')); } finally { setBusy(false); }
+  }
+  async function submitMfa(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault(); setBusy(true); setError(null);
+    const code = String(new FormData(e.currentTarget).get('code') || '');
+    try {
+      const res = await adminApi.loginMfa(pending!, code);
+      if (res.ok) onAuth((await res.json()).email);
+      else if (res.status === 401) {
+        const b = await res.json().catch(() => ({}));
+        setError(b.error === 'mfa_expired' ? t('admin.mfa.expired') : t('admin.mfa.badCode'));
+        if (b.error === 'mfa_expired') setPending(null);
+      } else setError(t('admin.loginFailed'));
+    } catch { setError(t('admin.serverDown')); } finally { setBusy(false); }
+  }
+
+  if (pending) {
+    return (
+      <form onSubmit={submitMfa} className="neu-raised p-9 max-w-[420px] mt-10 flex flex-col gap-[18px]">
+        <span className="mini-mono text-teal">{`// ${t('admin.mfa.stepTitle').toUpperCase()}`}</span>
+        <p className="text-paper-dim text-[.88rem]">{t('admin.mfa.stepHint')}</p>
+        <div>
+          <label htmlFor="mfa-code" className={label}>{t('admin.mfa.codeLabel')}</label>
+          <input id="mfa-code" name="code" inputMode="numeric" autoComplete="one-time-code" autoFocus
+            placeholder="123456" className={`${field} tracking-[.3em] text-center`} />
+        </div>
+        <button type="submit" disabled={busy} className="btn btn-primary neu-btn justify-center disabled:opacity-50">
+          {busy ? t('admin.mfa.verifying') : t('admin.mfa.verify')}</button>
+        <button type="button" onClick={() => { setPending(null); setError(null); }} className="font-mono text-[.72rem] text-slate hover:text-cyan self-start">{t('admin.mfa.back')}</button>
+        {error && <span className="font-mono text-[.78rem] text-termred" role="alert">{error}</span>}
+      </form>
+    );
   }
   return (
     <form onSubmit={submit} className="neu-raised p-9 max-w-[420px] mt-10 flex flex-col gap-[18px]">
@@ -136,6 +171,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
     { id: 'submissions', label: t('admin.tabSubmissions') },
     { id: 'assessments', label: t('admin.tabAssessments') },
     { id: 'clients', label: t('admin.tabClients') },
+    { id: 'security', label: t('admin.tabSecurity') },
     { id: 'subscribers', label: t('admin.tabSubscribers') },
   ];
   async function logout() { await adminApi.logout(); onLogout(); }
@@ -157,6 +193,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
       {tab === 'submissions' && <SubmissionsList />}
       {tab === 'assessments' && <AssessmentsList />}
       {tab === 'clients' && <ClientsManager />}
+      {tab === 'security' && <SecurityPanel />}
       {tab === 'subscribers' && <SubscribersList />}
     </div>
   );
@@ -457,6 +494,98 @@ function SubscribersList() {
             <button onClick={async () => { if (window.confirm(t('admin.delSubConfirm'))) { await adminApi.deleteSubscriber(s.id); load(); } }} className="font-mono text-[.74rem] px-3 py-1.5 neu-btn text-paper-dim hover:text-termred shrink-0">{t('admin.del')}</button>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function SecurityPanel() {
+  const { t } = useTranslation();
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [stage, setStage] = useState<'idle' | 'setup' | 'done'>('idle');
+  const [qr, setQr] = useState('');
+  const [secret, setSecret] = useState('');
+  const [codes, setCodes] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+
+  useEffect(() => { adminApi.me().then((m) => setEnabled(Boolean(m?.mfa_enabled))); }, []);
+
+  async function begin() {
+    setErr('');
+    try { const r = await adminApi.mfaSetup(); setQr(r.qr_svg); setSecret(r.secret); setStage('setup'); }
+    catch { setErr(t('admin.mfa.setupErr')); }
+  }
+  async function confirm(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault(); setErr('');
+    const code = String(new FormData(e.currentTarget).get('code') || '');
+    try { const r = await adminApi.mfaEnable(code); setCodes(r.recovery_codes); setStage('done'); setEnabled(true); }
+    catch { setErr(t('admin.mfa.badCode')); }
+  }
+  async function disable() {
+    const code = prompt(t('admin.mfa.disablePrompt'));
+    if (!code) return;
+    try { await adminApi.mfaDisable(code); setEnabled(false); setStage('idle'); setCodes([]); }
+    catch { setErr(t('admin.mfa.badCode')); }
+  }
+
+  const field = 'bg-ink border border-soft rounded-brand text-paper font-body text-[.94rem] px-[15px] py-[13px] focus:border-cyan focus:outline-none';
+
+  return (
+    <div className="max-w-[640px] grid gap-6">
+      <div className="neu neu-raised rounded-panel p-8">
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="font-display text-[1.3rem] text-paper font-semibold">{t('admin.mfa.title')}</h2>
+          {enabled !== null && (
+            <span className={`font-mono text-[.72rem] px-2.5 py-[3px] rounded border ${enabled ? 'text-teal border-teal/40 bg-teal/10' : 'text-termamber border-termamber/40 bg-termamber/10'}`}>
+              {enabled ? t('admin.mfa.on') : t('admin.mfa.off')}
+            </span>
+          )}
+        </div>
+        <p className="text-paper-dim text-[.92rem] leading-relaxed mb-6">{t('admin.mfa.desc')}</p>
+
+        {enabled === false && stage === 'idle' && (
+          <button onClick={begin} className="btn btn-primary">{t('admin.mfa.enable')}</button>
+        )}
+
+        {stage === 'setup' && (
+          <form onSubmit={confirm} className="grid gap-5">
+            <p className="text-paper-dim text-[.9rem]">{t('admin.mfa.scan')}</p>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="bg-paper rounded-brand p-3 w-[200px] h-[200px] shrink-0" dangerouslySetInnerHTML={{ __html: qr }} />
+              <div className="grid gap-2">
+                <span className="font-mono text-[.72rem] text-slate uppercase tracking-[.08em]">{t('admin.mfa.manualKey')}</span>
+                <code className="font-mono text-[.82rem] text-cyan break-all bg-ink-3 rounded px-3 py-2 max-w-[240px]">{secret}</code>
+              </div>
+            </div>
+            <div>
+              <label className={label}>{t('admin.mfa.enterCode')}</label>
+              <input name="code" inputMode="numeric" autoComplete="one-time-code" placeholder="123456" className={`${field} tracking-[.3em] text-center max-w-[200px]`} />
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" className="btn btn-primary">{t('admin.mfa.confirm')}</button>
+              <button type="button" onClick={() => setStage('idle')} className="btn btn-ghost neu-btn !py-[10px] !px-[18px] !text-[.8rem]">{t('admin.cancel')}</button>
+            </div>
+          </form>
+        )}
+
+        {stage === 'done' && codes.length > 0 && (
+          <div className="grid gap-4">
+            <p className="font-mono text-[.85rem] text-teal">{t('admin.mfa.enabledOk')}</p>
+            <div className="neu neu-inset rounded-panel p-5">
+              <p className="text-paper-dim text-[.88rem] mb-3">{t('admin.mfa.saveRecovery')}</p>
+              <div className="grid grid-cols-2 gap-2 font-mono text-[.85rem] text-paper">
+                {codes.map((c) => <code key={c} className="bg-ink-3 rounded px-2 py-1">{c}</code>)}
+              </div>
+            </div>
+            <button onClick={() => setStage('idle')} className="btn btn-primary w-fit">{t('admin.mfa.doneBtn')}</button>
+          </div>
+        )}
+
+        {enabled === true && stage === 'idle' && (
+          <button onClick={disable} className="font-mono text-[.8rem] text-termred hover:underline">{t('admin.mfa.disable')}</button>
+        )}
+
+        {err && <p className="font-mono text-[.8rem] text-termred mt-4" role="alert">{err}</p>}
       </div>
     </div>
   );

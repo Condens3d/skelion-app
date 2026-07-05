@@ -1089,6 +1089,33 @@
       "sendTest": "envoyer un e-mail de test",
       "mailOk": "e-mail de test envoyé à {{to}}",
       "mailFail": "échec de l'envoi, vérifiez les paramètres SMTP"
+    },
+    "tabSecurity": "Sécurité",
+    "mfa": {
+      "stepTitle": "double facteur",
+      "stepHint": "Saisissez le code à 6 chiffres de votre application d'authentification.",
+      "codeLabel": "Code d'authentification",
+      "verify": "Vérifier",
+      "verifying": "Vérification...",
+      "back": "retour à la connexion",
+      "badCode": "Code invalide. Réessayez.",
+      "expired": "Session expirée, reconnectez-vous.",
+      "title": "Authentification à deux facteurs",
+      "on": "ACTIVÉE",
+      "off": "NON ACTIVÉE",
+      "desc": "Protégez la console d'administration avec un code à usage unique temporel issu d'une application d'authentification (Google Authenticator, Authy, 1Password). Fortement recommandé pour une plateforme de sécurité.",
+      "enable": "Activer le double facteur",
+      "scan": "Scannez ce QR code avec votre application d'authentification, puis saisissez le code affiché pour confirmer.",
+      "manualKey": "ou saisissez cette clé manuellement",
+      "enterCode": "Code à 6 chiffres de l'application",
+      "confirm": "Confirmer et activer",
+      "enabledOk": "L'authentification à deux facteurs est maintenant activée.",
+      "saveRecovery": "Conservez ces codes de récupération en lieu sûr. Chacun fonctionne une seule fois en cas de perte de votre appareil. Ils ne seront plus affichés.",
+      "doneBtn": "Terminé",
+      "disable": "Désactiver le double facteur",
+      "disablePrompt": "Saisissez un code d'authentification actuel pour désactiver le double facteur :",
+      "setupErr": "Impossible de démarrer la configuration. Réessayez.",
+      "enterKey": "clé"
     }
   },
   "insights": {

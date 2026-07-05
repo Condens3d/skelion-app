@@ -24,7 +24,9 @@ export async function createSqliteStore(config, log) {
     CREATE INDEX IF NOT EXISTS idx_submissions_created ON submissions(created_at DESC);
     CREATE TABLE IF NOT EXISTS admin_users (
       id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      password_hash TEXT NOT NULL,
+      mfa_secret TEXT, mfa_enabled INTEGER NOT NULL DEFAULT 0, recovery_codes TEXT NOT NULL DEFAULT '[]',
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS posts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,8 +102,13 @@ export async function createSqliteStore(config, log) {
     countSubNew: db.prepare('SELECT COUNT(*) AS n FROM submissions WHERE handled = 0'),
     setHandled: db.prepare(`UPDATE submissions SET handled=?, handled_at=CASE WHEN ?=1 THEN datetime('now') ELSE NULL END WHERE id=?`),
     delSub: db.prepare('DELETE FROM submissions WHERE id=?'),
-    adminByEmail: db.prepare('SELECT id,email,password_hash FROM admin_users WHERE email=?'),
+    adminByEmail: db.prepare('SELECT id,email,password_hash,mfa_secret,mfa_enabled,recovery_codes FROM admin_users WHERE email=?'),
     adminCount: db.prepare('SELECT COUNT(*) AS n FROM admin_users'),
+    setMfaSecret: db.prepare('UPDATE admin_users SET mfa_secret=? WHERE id=?'),
+    enableMfa: db.prepare('UPDATE admin_users SET mfa_enabled=1, recovery_codes=? WHERE id=?'),
+    disableMfa: db.prepare("UPDATE admin_users SET mfa_enabled=0, mfa_secret=NULL, recovery_codes='[]' WHERE id=?"),
+    setRecovery: db.prepare('UPDATE admin_users SET recovery_codes=? WHERE id=?'),
+    adminById: db.prepare('SELECT id,email,password_hash,mfa_secret,mfa_enabled,recovery_codes FROM admin_users WHERE id=?'),
     insertAdmin: db.prepare('INSERT INTO admin_users (email,password_hash) VALUES (?,?)'),
     // posts
     insertPost: db.prepare(`INSERT INTO posts (slug,tag,title_en,title_fr,excerpt_en,excerpt_fr,body_en,body_fr,published,published_at) VALUES (?,?,?,?,?,?,?,?,?,?)`),
@@ -159,6 +166,11 @@ export async function createSqliteStore(config, log) {
     async deleteSubmission(id) { return q.delSub.run(id).changes > 0; },
     // admin
     async findAdminByEmail(email) { return q.adminByEmail.get(email.toLowerCase()) ?? null; },
+    async findAdminById(id) { return q.adminById.get(id) ?? null; },
+    async setAdminMfaSecret(id, secret) { return q.setMfaSecret.run(secret, id).changes > 0; },
+    async enableAdminMfa(id, recoveryHashes) { return q.enableMfa.run(JSON.stringify(recoveryHashes), id).changes > 0; },
+    async disableAdminMfa(id) { return q.disableMfa.run(id).changes > 0; },
+    async setAdminRecoveryCodes(id, recoveryHashes) { return q.setRecovery.run(JSON.stringify(recoveryHashes), id).changes > 0; },
     async seedAdmin(email, password) {
       if (q.adminCount.get().n > 0) return false;
       if (!email || !password) { log.warn?.('[seed] admin env not set; /admin unusable until seeded.'); return false; }

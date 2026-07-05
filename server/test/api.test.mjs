@@ -291,3 +291,82 @@ test('portal: finding lifecycle sets and clears resolved_at', async (t) => {
   cur = (await request(app).get(`/api/admin/engagements/${e1}/findings`).set('Cookie', admin)).body.items[0];
   assert.equal(cur.resolved_at, null, 'resolved_at cleared when reopened');
 });
+// ---- Admin MFA (TOTP) ----
+import { totp } from '../src/totp.js';
+
+async function fullLogin(app, store) {
+  await store.seedAdmin('mfa-admin@skelion.com', 'strong-admin-pass-1');
+  const r = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  return { cookie: r.headers['set-cookie'], body: r.body };
+}
+
+test('mfa: enrol, enable, then login requires a valid code', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const { cookie, body } = await fullLogin(app, store);
+  assert.equal(body.mfa_enabled, false); // no MFA yet -> direct session
+
+  const setup = await request(app).post('/api/auth/mfa/setup').set('Cookie', cookie);
+  assert.equal(setup.status, 200);
+  assert.match(setup.body.otpauth, /^otpauth:\/\/totp\//);
+
+  const good = totp(setup.body.secret);
+  const enable = await request(app).post('/api/auth/mfa/enable').set('Cookie', cookie).send({ token: good });
+  assert.equal(enable.status, 200);
+  assert.equal(enable.body.recovery_codes.length, 10);
+
+  // Next login now requires step 2
+  const l = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  assert.equal(l.body.mfa_required, true);
+  assert.ok(l.body.pending);
+
+  const bad = await request(app).post('/api/auth/login/mfa').send({ pending: l.body.pending, token: '000000' });
+  assert.equal(bad.status, 401);
+
+  const ok = await request(app).post('/api/auth/login/mfa').send({ pending: l.body.pending, token: totp(setup.body.secret) });
+  assert.equal(ok.status, 200);
+  assert.match(ok.headers['set-cookie'][0], /skelion_session/);
+});
+
+test('mfa: recovery code works once then is burned', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const { cookie } = await fullLogin(app, store);
+  const setup = await request(app).post('/api/auth/mfa/setup').set('Cookie', cookie);
+  const enable = await request(app).post('/api/auth/mfa/enable').set('Cookie', cookie).send({ token: totp(setup.body.secret) });
+  const rc = enable.body.recovery_codes[0];
+
+  const l1 = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  const use1 = await request(app).post('/api/auth/login/mfa').send({ pending: l1.body.pending, token: rc });
+  assert.equal(use1.status, 200);
+  assert.equal(use1.body.recovery_used, true);
+  assert.equal(use1.body.recovery_remaining, 9);
+
+  const l2 = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  const use2 = await request(app).post('/api/auth/login/mfa').send({ pending: l2.body.pending, token: rc });
+  assert.equal(use2.status, 401, 'same recovery code must not work twice');
+});
+
+test('mfa: pending token cannot access admin APIs, and expires audience-separated', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const { cookie } = await fullLogin(app, store);
+  const setup = await request(app).post('/api/auth/mfa/setup').set('Cookie', cookie);
+  await request(app).post('/api/auth/mfa/enable').set('Cookie', cookie).send({ token: totp(setup.body.secret) });
+  const l = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  // pending token is not a session cookie; admin API must still reject
+  const stats = await request(app).get('/api/admin/stats').set('Cookie', [`skelion_session=${l.body.pending}`]);
+  assert.equal(stats.status, 401);
+});
+
+test('mfa: disable requires a valid code and restores single-factor login', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const { cookie } = await fullLogin(app, store);
+  const setup = await request(app).post('/api/auth/mfa/setup').set('Cookie', cookie);
+  await request(app).post('/api/auth/mfa/enable').set('Cookie', cookie).send({ token: totp(setup.body.secret) });
+
+  const badDisable = await request(app).post('/api/auth/mfa/disable').set('Cookie', cookie).send({ token: '000000' });
+  assert.equal(badDisable.status, 401);
+  const okDisable = await request(app).post('/api/auth/mfa/disable').set('Cookie', cookie).send({ token: totp(setup.body.secret) });
+  assert.equal(okDisable.status, 200);
+
+  const l = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
+  assert.equal(l.body.ok, true); // straight to session again
+});

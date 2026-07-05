@@ -1089,6 +1089,33 @@
       "sendTest": "send test email",
       "mailOk": "test email sent to {{to}}",
       "mailFail": "send failed, check SMTP settings"
+    },
+    "tabSecurity": "Security",
+    "mfa": {
+      "stepTitle": "two-factor",
+      "stepHint": "Enter the 6-digit code from your authenticator app.",
+      "codeLabel": "Authentication code",
+      "verify": "Verify",
+      "verifying": "Verifying...",
+      "back": "back to login",
+      "badCode": "Invalid code. Try again.",
+      "expired": "Session expired, sign in again.",
+      "title": "Two-factor authentication",
+      "on": "ENABLED",
+      "off": "NOT ENABLED",
+      "desc": "Protect the admin console with a time-based one-time code from an authenticator app (Google Authenticator, Authy, 1Password). Strongly recommended for a security platform.",
+      "enable": "Enable two-factor",
+      "scan": "Scan this QR code with your authenticator app, then enter the code it shows to confirm.",
+      "manualKey": "or enter this key manually",
+      "enterCode": "6-digit code from the app",
+      "confirm": "Confirm and enable",
+      "enabledOk": "Two-factor authentication is now enabled.",
+      "saveRecovery": "Save these recovery codes somewhere safe. Each works once if you lose your device. They will not be shown again.",
+      "doneBtn": "Done",
+      "disable": "Disable two-factor",
+      "disablePrompt": "Enter a current authenticator code to disable two-factor:",
+      "setupErr": "Could not start setup. Try again.",
+      "enterKey": "key"
     }
   },
   "insights": {
