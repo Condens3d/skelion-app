@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://skelionenterprises.com/sitemap.xml
+Sitemap: https://skeliontech.com/sitemap.xml

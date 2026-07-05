@@ -39,6 +39,14 @@ export async function createSqliteStore(config, log) {
       published_at TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_posts_pub ON posts(published, published_at DESC);
+    CREATE TABLE IF NOT EXISTS assessments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT DEFAULT '', organization TEXT DEFAULT '', email TEXT DEFAULT '',
+      answers TEXT NOT NULL, domain_scores TEXT NOT NULL,
+      total_score INTEGER NOT NULL, grade TEXT NOT NULL,
+      locale TEXT NOT NULL DEFAULT 'en',
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
     CREATE TABLE IF NOT EXISTS subscribers (
       id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE,
       locale TEXT DEFAULT 'en', created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -66,6 +74,14 @@ export async function createSqliteStore(config, log) {
     listAll: db.prepare('SELECT id,slug,tag,title_en,title_fr,published,created_at,updated_at,published_at FROM posts ORDER BY updated_at DESC, id DESC'),
     countAllPosts: db.prepare('SELECT COUNT(*) AS n FROM posts'),
     // subscribers
+    insertAssessment: db.prepare(`INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES (?,?,?,?,?,?,?,?)`),
+    listAssessments: db.prepare(`SELECT id,name,organization,email,domain_scores,total_score,grade,locale,created_at FROM assessments ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`),
+    countAssessments: db.prepare('SELECT COUNT(*) n FROM assessments'),
+    assessmentById: db.prepare('SELECT * FROM assessments WHERE id=?'),
+    delAssessment: db.prepare('DELETE FROM assessments WHERE id=?'),
+    avgAssessment: db.prepare('SELECT AVG(total_score) a FROM assessments'),
+    tlSub: db.prepare(`SELECT date(created_at) d, COUNT(*) n FROM submissions WHERE created_at >= date('now', ?) GROUP BY date(created_at)`),
+    tlAss: db.prepare(`SELECT date(created_at) d, COUNT(*) n FROM assessments WHERE created_at >= date('now', ?) GROUP BY date(created_at)`),
     insertSubscriber: db.prepare('INSERT OR IGNORE INTO subscribers (email,locale) VALUES (?,?)'),
     listSubscribers: db.prepare('SELECT id,email,locale,created_at FROM subscribers ORDER BY created_at DESC, id DESC'),
     countSubscribers: db.prepare('SELECT COUNT(*) AS n FROM subscribers'),
@@ -98,10 +114,34 @@ export async function createSqliteStore(config, log) {
     async listPublishedPosts(limit, offset) { return { total: q.countPub.get().n, items: q.listPub.all(limit, offset) }; },
     async listAllPosts() { return { total: q.countAllPosts.get().n, items: q.listAll.all() }; },
     // subscribers
+    async createAssessment(a) { return Number(q.insertAssessment.run(a.name,a.organization,a.email,JSON.stringify(a.answers),JSON.stringify(a.domain_scores),a.total_score,a.grade,a.locale).lastInsertRowid); },
+    async listAssessments(limit, offset) {
+      const items = q.listAssessments.all(limit, offset).map(r => ({ ...r, domain_scores: JSON.parse(r.domain_scores) }));
+      return { total: q.countAssessments.get().n, items };
+    },
+    async getAssessment(id) {
+      const r = q.assessmentById.get(id); if (!r) return null;
+      return { ...r, answers: JSON.parse(r.answers), domain_scores: JSON.parse(r.domain_scores) };
+    },
+    async deleteAssessment(id) { return q.delAssessment.run(id).changes > 0; },
+    async timeline(days) {
+      const arg = `-${days} days`;
+      const sub = Object.fromEntries(q.tlSub.all(arg).map(r => [r.d, r.n]));
+      const ass = Object.fromEntries(q.tlAss.all(arg).map(r => [r.d, r.n]));
+      const out = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+        out.push({ day: d, submissions: sub[d] || 0, assessments: ass[d] || 0 });
+      }
+      return out;
+    },
     async addSubscriber(email, locale) { return q.insertSubscriber.run(email.toLowerCase(), locale).changes > 0; },
     async listSubscribers() { return { total: q.countSubscribers.get().n, items: q.listSubscribers.all() }; },
     async deleteSubscriber(id) { return q.delSubscriber.run(id).changes > 0; },
     // dashboard
+    async statsExtra() {
+      return { assessments: q.countAssessments.get().n, avgScore: Math.round((q.avgAssessment.get().a || 0) * 10) / 10 };
+    },
     async stats() {
       return {
         submissions: q.countSub.get().n,

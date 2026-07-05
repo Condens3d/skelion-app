@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 const SITE =
   typeof window !== 'undefined' && window.location?.origin
     ? window.location.origin
-    : 'https://skelionenterprises.com';
+    : 'https://skeliontech.com';
 
 interface SeoOptions {
   title: string;

@@ -36,6 +36,14 @@ export async function createPostgresStore(config, log) {
       published_at TIMESTAMPTZ
     );
     CREATE INDEX IF NOT EXISTS idx_posts_pub ON posts (published, published_at DESC);
+    CREATE TABLE IF NOT EXISTS assessments (
+      id BIGSERIAL PRIMARY KEY,
+      name TEXT NOT NULL DEFAULT '', organization TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '',
+      answers JSONB NOT NULL, domain_scores JSONB NOT NULL,
+      total_score INTEGER NOT NULL, grade TEXT NOT NULL,
+      locale TEXT NOT NULL DEFAULT 'en',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
     CREATE TABLE IF NOT EXISTS subscribers (
       id BIGSERIAL PRIMARY KEY, email TEXT NOT NULL UNIQUE, locale TEXT NOT NULL DEFAULT 'en',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -104,6 +112,46 @@ export async function createPostgresStore(config, log) {
         pool.query('SELECT COUNT(*)::int AS n FROM posts'),
       ]);
       return { total: total.rows[0].n, items: items.rows.map(mapPostFull) };
+    },
+    async createAssessment(a) {
+      const r = await pool.query(
+        `INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+        [a.name, a.organization, a.email, JSON.stringify(a.answers), JSON.stringify(a.domain_scores), a.total_score, a.grade, a.locale]
+      );
+      return Number(r.rows[0].id);
+    },
+    async listAssessments(limit, offset) {
+      const [items, count] = await Promise.all([
+        pool.query(`SELECT id,name,organization,email,domain_scores,total_score,grade,locale,created_at FROM assessments ORDER BY created_at DESC, id DESC LIMIT $1 OFFSET $2`, [limit, offset]),
+        pool.query('SELECT COUNT(*)::int n FROM assessments'),
+      ]);
+      return { total: count.rows[0].n, items: items.rows };
+    },
+    async getAssessment(id) {
+      const r = await pool.query('SELECT * FROM assessments WHERE id=$1', [id]);
+      return r.rows[0] ?? null;
+    },
+    async deleteAssessment(id) {
+      const r = await pool.query('DELETE FROM assessments WHERE id=$1', [id]);
+      return r.rowCount > 0;
+    },
+    async statsExtra() {
+      const r = await pool.query('SELECT COUNT(*)::int n, COALESCE(ROUND(AVG(total_score)::numeric,1),0) a FROM assessments');
+      return { assessments: r.rows[0].n, avgScore: Number(r.rows[0].a) };
+    },
+    async timeline(days) {
+      const [sub, ass] = await Promise.all([
+        pool.query(`SELECT to_char(created_at::date,'YYYY-MM-DD') d, COUNT(*)::int n FROM submissions WHERE created_at >= now() - ($1||' days')::interval GROUP BY 1`, [days]),
+        pool.query(`SELECT to_char(created_at::date,'YYYY-MM-DD') d, COUNT(*)::int n FROM assessments WHERE created_at >= now() - ($1||' days')::interval GROUP BY 1`, [days]),
+      ]);
+      const s2 = Object.fromEntries(sub.rows.map(r => [r.d, r.n]));
+      const a2 = Object.fromEntries(ass.rows.map(r => [r.d, r.n]));
+      const out = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+        out.push({ day: d, submissions: s2[d] || 0, assessments: a2[d] || 0 });
+      }
+      return out;
     },
     async addSubscriber(email, locale) {
       const r = await pool.query('INSERT INTO subscribers (email,locale) VALUES ($1,$2) ON CONFLICT (email) DO NOTHING', [email.toLowerCase(), locale]);

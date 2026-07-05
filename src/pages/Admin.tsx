@@ -1,3 +1,4 @@
+import { adminExtras, AdminAssessmentRow, TimelineDay } from '../lib/api';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSeo } from '../lib/seo';
@@ -15,7 +16,7 @@ import {
 
 const field = 'w-full neu-inset text-paper font-body text-[.92rem] px-[14px] py-[11px] focus:outline-none border-0';
 const label = 'font-mono text-[.72rem] text-slate tracking-[.1em] uppercase block mb-[6px]';
-type Tab = 'overview' | 'insights' | 'submissions' | 'subscribers';
+type Tab = 'overview' | 'insights' | 'submissions' | 'assessments' | 'subscribers';
 
 export default function Admin() {
   const { t } = useTranslation();
@@ -77,6 +78,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
     { id: 'overview', label: t('admin.tabOverview') },
     { id: 'insights', label: t('admin.tabInsights') },
     { id: 'submissions', label: t('admin.tabSubmissions') },
+    { id: 'assessments', label: t('admin.tabAssessments') },
     { id: 'subscribers', label: t('admin.tabSubscribers') },
   ];
   async function logout() { await adminApi.logout(); onLogout(); }
@@ -96,6 +98,7 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
       {tab === 'overview' && <Overview onGo={setTab} />}
       {tab === 'insights' && <InsightsManager />}
       {tab === 'submissions' && <SubmissionsList />}
+      {tab === 'assessments' && <AssessmentsList />}
       {tab === 'subscribers' && <SubscribersList />}
     </div>
   );
@@ -103,22 +106,120 @@ function Dashboard({ email, onLogout }: { email: string; onLogout: () => void })
 
 function Overview({ onGo }: { onGo: (t: Tab) => void }) {
   const { t } = useTranslation();
-  const [s, setS] = useState<Stats | null>(null);
-  useEffect(() => { adminApi.stats().then(setS).catch(() => setS(null)); }, []);
-  const tiles: { k: keyof Stats; label: string; go?: Tab; accent?: boolean }[] = [
+  const [s, setS] = useState<(Stats & { assessments?: number; avgScore?: number }) | null>(null);
+  const [days, setDays] = useState<TimelineDay[]>([]);
+  const [mailTest, setMailTest] = useState<'idle' | 'busy' | 'ok' | 'fail'>('idle');
+  const [mailMsg, setMailMsg] = useState('');
+  useEffect(() => {
+    adminApi.stats().then(setS).catch(() => setS(null));
+    adminExtras.timeline().then((r) => setDays(r.days)).catch(() => setDays([]));
+  }, []);
+  const tiles: { k: string; label: string; go?: Tab; accent?: boolean }[] = [
     { k: 'submissionsNew', label: t('admin.statNewMsgs'), go: 'submissions', accent: true },
     { k: 'submissions', label: t('admin.statTotalMsgs'), go: 'submissions' },
+    { k: 'assessments', label: t('admin.statAssessments'), go: 'assessments', accent: true },
+    { k: 'avgScore', label: t('admin.statAvgScore'), go: 'assessments' },
     { k: 'postsPublished', label: t('admin.statPublished'), go: 'insights' },
     { k: 'posts', label: t('admin.statTotalPosts'), go: 'insights' },
     { k: 'subscribers', label: t('admin.statSubscribers'), go: 'subscribers' },
   ];
+  const maxBar = Math.max(1, ...days.map((d) => d.submissions + d.assessments));
+  async function testEmail() {
+    setMailTest('busy'); setMailMsg('');
+    try {
+      const r = await adminExtras.testEmail();
+      setMailTest('ok'); setMailMsg(t('admin.mailTestOk', { to: r.to }));
+    } catch (e) {
+      setMailTest('fail');
+      const body = (e as { body?: { error?: string } }).body;
+      setMailMsg(body?.error || t('admin.mailTestFail'));
+    }
+  }
   return (
-    <div className="grid grid-cols-4 max-[1024px]:grid-cols-2 max-[560px]:grid-cols-1 gap-[18px]">
-      {tiles.map((tile) => (
-        <button key={tile.k} onClick={() => tile.go && onGo(tile.go)} className="neu neu-hover p-6 text-left">
-          <span className={`font-display font-bold text-[2.1rem] block leading-none mb-2 ${tile.accent ? 'text-cyan' : 'text-paper'}`}>{s ? s[tile.k] : '—'}</span>
-          <span className="font-mono text-[.72rem] text-slate tracking-[.08em] uppercase">{tile.label}</span>
+    <div className="grid gap-[18px]">
+      <div className="grid grid-cols-4 max-[1024px]:grid-cols-2 max-[560px]:grid-cols-1 gap-[18px]">
+        {tiles.map((tile) => (
+          <button key={tile.k} onClick={() => tile.go && onGo(tile.go)} className="neu neu-hover p-6 text-left">
+            <span className={`font-display font-bold text-[2.1rem] block leading-none mb-2 ${tile.accent ? 'text-cyan' : 'text-paper'}`}>
+              {s ? ((s as unknown as Record<string, number | undefined>)[tile.k] ?? 0) : '—'}
+            </span>
+            <span className="font-mono text-[.72rem] text-slate tracking-[.08em] uppercase">{tile.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="neu p-6">
+        <div className="font-mono text-[.72rem] text-slate tracking-[.08em] uppercase mb-4">{t('admin.activity14d')}</div>
+        <div className="flex items-end gap-[6px] h-[90px]" role="img" aria-label={t('admin.activity14d')}>
+          {days.map((d) => (
+            <div key={d.day} className="flex-1 flex flex-col justify-end gap-[2px]" title={`${d.day}: ${d.submissions} / ${d.assessments}`}>
+              <div className="bg-teal/80 rounded-t-sm" style={{ height: `${(d.assessments / maxBar) * 100}%`, minHeight: d.assessments ? 3 : 0 }} />
+              <div className="bg-cyan/80 rounded-t-sm" style={{ height: `${(d.submissions / maxBar) * 100}%`, minHeight: d.submissions ? 3 : 1 }} />
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-5 mt-3 font-mono text-[.7rem] text-paper-dim">
+          <span><span className="inline-block w-[10px] h-[10px] bg-cyan/80 rounded-sm mr-1.5 align-middle" />{t('admin.legendSubmissions')}</span>
+          <span><span className="inline-block w-[10px] h-[10px] bg-teal/80 rounded-sm mr-1.5 align-middle" />{t('admin.legendAssessments')}</span>
+        </div>
+      </div>
+
+      <div className="neu p-6 flex flex-wrap items-center gap-4">
+        <div className="mr-auto">
+          <div className="font-mono text-[.72rem] text-slate tracking-[.08em] uppercase mb-1">{t('admin.mailTestTitle')}</div>
+          <div className="text-paper-dim text-[.85rem]">{t('admin.mailTestDesc')}</div>
+        </div>
+        <button onClick={testEmail} disabled={mailTest === 'busy'} className="btn btn-ghost neu-btn !py-[9px] !px-[18px] !text-[.8rem] disabled:opacity-50">
+          {mailTest === 'busy' ? t('admin.mailTestBusy') : t('admin.mailTestBtn')}
         </button>
+        {mailMsg && (
+          <div className={`w-full font-mono text-[.78rem] ${mailTest === 'ok' ? 'text-teal' : 'text-termred'}`} role="status">{mailMsg}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AssessmentsList() {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<AdminAssessmentRow[]>([]);
+  const [openId, setOpenId] = useState<number | null>(null);
+  const load = () => adminExtras.assessments().then((r) => setRows(r.items)).catch(() => setRows([]));
+  useEffect(() => { load(); }, []);
+  async function remove(id: number) {
+    if (!confirm(t('admin.delConfirm'))) return;
+    await adminExtras.deleteAssessment(id).catch(() => {});
+    load();
+  }
+  if (rows.length === 0) return <p className="font-mono text-[.85rem] text-paper-dim">{t('admin.noAssessments')}</p>;
+  return (
+    <div className="grid gap-3">
+      {rows.map((a) => (
+        <div key={a.id} className="neu p-5">
+          <button className="w-full text-left flex flex-wrap items-center gap-x-5 gap-y-1" onClick={() => setOpenId(openId === a.id ? null : a.id)}>
+            <span className="font-mono text-[.78rem] text-cyan">SKL-A-{String(a.id).padStart(5, '0')}</span>
+            <span className={`font-display font-bold ${a.grade === 'A' || a.grade === 'B' ? 'text-teal' : a.grade === 'E' ? 'text-termred' : 'text-termamber'}`}>
+              {a.grade} · {a.total_score}/30
+            </span>
+            <span className="text-paper text-[.9rem]">{a.organization || a.name || '—'}</span>
+            <span className="font-mono text-[.72rem] text-paper-dim ml-auto">{new Date(a.created_at).toLocaleString()}</span>
+          </button>
+          {openId === a.id && (
+            <div className="mt-4 pt-4 border-t border-soft grid gap-2 font-mono text-[.78rem]">
+              <div className="text-paper-dim">{a.name || '—'} · {a.email || '—'} · {a.locale}</div>
+              {Object.entries(a.domain_scores).map(([d, ds]) => (
+                <div key={d} className="flex items-center gap-3">
+                  <span className="w-[120px] text-paper-dim">{t(`assessment.domains.${d}`)}</span>
+                  <div className="flex-1 h-[6px] bg-ink-3 rounded-full overflow-hidden">
+                    <div className={ds.pct >= 67 ? 'h-full bg-teal' : ds.pct >= 34 ? 'h-full bg-termamber' : 'h-full bg-termred'} style={{ width: `${Math.max(ds.pct, 4)}%` }} />
+                  </div>
+                  <span className="text-paper">{ds.points}/{ds.max}</span>
+                </div>
+              ))}
+              <button onClick={() => remove(a.id)} className="mt-2 w-fit font-mono text-[.75rem] text-termred hover:underline">{t('admin.del')}</button>
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );

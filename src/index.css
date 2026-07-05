@@ -342,3 +342,7 @@
   .logo-anim, .logo-float, .logo-shimmer::after, .text-flow, .animate-float-up { animation: none !important; }
   .logo-shimmer::after { display: none; }
 }
+
+/* Assessment score ring draw-in */
+.score-ring-anim { transition: stroke-dasharray 1.1s cubic-bezier(.22,1,.36,1); }
+@media (prefers-reduced-motion: reduce) { .score-ring-anim { transition: none; } }

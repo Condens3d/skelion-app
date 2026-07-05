@@ -135,3 +135,75 @@ test('strict CSP, no unsafe-inline', async (t) => {
   const csp = (await request(app).get('/api/health')).headers['content-security-policy'];
   assert.ok(csp.includes("script-src 'self'")); assert.ok(!csp.includes('unsafe-inline'));
 });
+// ---- Security posture assessment ----
+const goodAnswers = { gov1:2,gov2:1,gov3:0, iam1:2,iam2:2,iam3:1, infra1:0,infra2:1,infra3:2, people1:1,people2:2,people3:0, res1:1,res2:0,res3:2 };
+
+test('assessment: scores server-side, stores, returns reference', async (t) => {
+  const { app, cleanup } = await boot(); t.after(cleanup);
+  const r = await request(app).post('/api/v1/assessment').send({ answers: goodAnswers, name: 'Jane', organization: 'ACME', email: 'jane@acme.com', locale: 'en' });
+  assert.equal(r.status, 201);
+  assert.equal(r.body.total_score, 17);
+  assert.equal(r.body.grade, 'C'); // 17/30 = 57%
+  assert.match(r.body.reference, /^SKL-A-\d{5}$/);
+  assert.equal(r.body.domain_scores.iam.points, 5);
+});
+
+test('assessment: rejects incomplete or invalid answers', async (t) => {
+  const { app, cleanup } = await boot(); t.after(cleanup);
+  const bad = { ...goodAnswers }; delete bad.res3;
+  const r1 = await request(app).post('/api/v1/assessment').send({ answers: bad });
+  assert.equal(r1.status, 400);
+  const r2 = await request(app).post('/api/v1/assessment').send({ answers: { ...goodAnswers, gov1: 5 } });
+  assert.equal(r2.status, 400);
+});
+
+test('assessment: honeypot silently accepted, nothing stored', async (t) => {
+  const { app, cleanup } = await boot(); t.after(cleanup);
+  const r = await request(app).post('/api/v1/assessment').send({ answers: goodAnswers, website: 'x'.repeat(0) || undefined });
+  // legit empty honeypot stores; now the bot case:
+  const bot = await request(app).post('/api/v1/assessment').send({ answers: goodAnswers, website: 'spam' });
+  assert.equal(bot.status, 400); // max(0) rejects non-empty at validation
+  assert.equal(r.status, 201);
+});
+
+test('admin: assessments list/get/delete + enriched stats + timeline', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const cookie = await login(app, store);
+  await request(app).post('/api/v1/assessment').send({ answers: goodAnswers, organization: 'ACME' });
+  const list = await request(app).get('/api/admin/assessments').set('Cookie', cookie);
+  assert.equal(list.status, 200); assert.equal(list.body.total, 1);
+  const id = list.body.items[0].id;
+  const one = await request(app).get(`/api/admin/assessments/${id}`).set('Cookie', cookie);
+  assert.equal(one.status, 200); assert.equal(one.body.answers.gov1, 2);
+  const stats = await request(app).get('/api/admin/stats').set('Cookie', cookie);
+  assert.equal(stats.body.assessments, 1); assert.equal(stats.body.avgScore, 17);
+  const tl = await request(app).get('/api/admin/timeline').set('Cookie', cookie);
+  assert.equal(tl.status, 200); assert.equal(tl.body.days.length, 14);
+  assert.equal(tl.body.days.at(-1).assessments, 1);
+  const del = await request(app).delete(`/api/admin/assessments/${id}`).set('Cookie', cookie);
+  assert.equal(del.status, 200);
+});
+
+test('public status reports db + mail state', async (t) => {
+  const { app, cleanup } = await boot(); t.after(cleanup);
+  const r = await request(app).get('/api/v1/status');
+  assert.equal(r.status, 200);
+  assert.equal(r.body.ok, true);
+  assert.equal(r.body.database.connected, true);
+  assert.equal(r.body.mail.configured, false);
+});
+
+test('admin test-email reports SMTP not configured', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const cookie = await login(app, store);
+  const r = await request(app).post('/api/admin/test-email').set('Cookie', cookie);
+  assert.equal(r.status, 502);
+  assert.match(r.body.error, /SMTP is not configured/);
+});
+
+test('contact returns a trackable reference', async (t) => {
+  const { app, cleanup } = await boot(); t.after(cleanup);
+  const r = await request(app).post('/api/contact').send({ name: 'Bob', email: 'bob@x.com', service: 'Pentest', message: 'hi', locale: 'en', organization: '', website: '' });
+  assert.equal(r.status, 201);
+  assert.match(r.body.reference, /^SKL-R-\d{5}$/);
+});

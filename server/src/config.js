@@ -29,8 +29,10 @@ export const config = {
     secure: process.env.SMTP_SECURE === '1', // true for port 465
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
-    from: process.env.MAIL_FROM || 'Skelion Website <no-reply@skeliontech.com>',
-    to: process.env.CONTACT_RECIPIENT || 'jedusor@skeliontech.com',
+    // From must match the authenticated mailbox on most SMTP providers (Hostinger
+    // rejects mismatched senders), so default From to the SMTP user itself.
+    from: process.env.MAIL_FROM || '',
+    to: process.env.CONTACT_RECIPIENT || 'info@skeliontech.com',
   },
 };
 

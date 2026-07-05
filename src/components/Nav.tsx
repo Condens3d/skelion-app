@@ -11,6 +11,7 @@ const links = [
   { to: '/licenses', key: 'licenses' },
   { to: '/physical', key: 'physical' },
   { to: '/insights', key: 'insights' },
+  { to: '/assessment', key: 'assessment' },
 ] as const;
 
 export default function Nav() {

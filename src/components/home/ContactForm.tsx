@@ -12,6 +12,7 @@ type Status = 'idle' | 'sending' | 'sent' | 'failed';
 export default function ContactForm() {
   const { t, i18n } = useTranslation();
   const [status, setStatus] = useState<Status>('idle');
+  const [reference, setReference] = useState('');
   const endpoint = (import.meta.env.VITE_FORM_ENDPOINT as string | undefined) || '/api/contact';
   const options = t('contact.svcOptions', { returnObjects: true }) as string[];
 
@@ -29,6 +30,8 @@ export default function ContactForm() {
         body: JSON.stringify(data),
       });
       if (res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { reference?: string };
+        setReference(body.reference || '');
         setStatus('sent');
         form.reset();
       } else {
@@ -85,6 +88,9 @@ export default function ContactForm() {
       >
         {buttonText}
       </button>
+      {status === 'sent' && reference && (
+        <span className="font-mono text-[.78rem] text-teal" role="status">{t('contact.refNote')} {reference}</span>
+      )}
       {status === 'failed' && (
         <span className="font-mono text-[.78rem] text-termred" role="alert">{t('contact.failed')}</span>
       )}

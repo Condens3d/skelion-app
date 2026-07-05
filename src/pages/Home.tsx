@@ -11,6 +11,7 @@ import CisoBand from '../components/home/CisoBand';
 import CourseGrid from '../components/home/CourseGrid';
 import PhysGrid from '../components/home/PhysGrid';
 import ContactSection from '../components/home/ContactSection';
+import AssessmentBand from '../components/home/AssessmentBand';
 
 /** JSON-LD ProfessionalService, ported verbatim from the approved reference. */
 const JSON_LD = {
@@ -67,6 +68,7 @@ export default function Home() {
       <CisoBand />
       <CourseGrid />
       <PhysGrid />
+      <AssessmentBand />
       <ContactSection />
     </>
   );

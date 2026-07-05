@@ -15,7 +15,8 @@
     "menuLabel": "Toggle menu",
     "skip": "Skip to content",
     "langLabel": "Switch language",
-    "insights": "Insights"
+    "insights": "Insights",
+    "assessment": "Security Check"
   },
   "home": {
     "seoTitle": "Skelion Enterprises | Cybersecurity Services, Pentesting, GRC & Licensing",
@@ -42,7 +43,12 @@
       "Secure by policy",
       "Verified by audit",
       "Hardened by adversary"
-    ]
+    ],
+    "assessCmd": "know your exposure",
+    "assessTitle": "Score your security posture in five minutes",
+    "assessDesc": "Fifteen questions across governance, access, infrastructure, people and resilience. Instant graded report with the priorities an auditor would flag first.",
+    "assessCta": "Run the free assessment",
+    "assessMeta": "no signup · 5 min · instant report"
   },
   "stats": {
     "s1n": "6",
@@ -370,7 +376,8 @@
     "sent": "Sent ✓",
     "failed": "> transmission_failed, retry or call us",
     "note": "// your details are used only to respond to this request",
-    "configNotice": ""
+    "configNotice": "",
+    "refNote": "Your reference:"
   },
   "footer": {
     "blurb": "Full-spectrum cybersecurity: offense, governance, leadership, training, licensing and physical security.",
@@ -390,7 +397,8 @@
     "company": "Company",
     "about": "About",
     "faq": "FAQ",
-    "insights": "Insights"
+    "insights": "Insights",
+    "assessment": "Security Check"
   },
   "pages": {
     "pentesting": {
@@ -1016,7 +1024,20 @@
     "subscribersTitle": "Newsletter subscribers",
     "exportCsv": "Export CSV",
     "noSubs": "// no subscribers yet",
-    "delSubConfirm": "Remove this subscriber?"
+    "delSubConfirm": "Remove this subscriber?",
+    "tabAssessments": "Assessments",
+    "statAssessments": "assessments",
+    "statAvgScore": "avg score /30",
+    "activity14d": "activity, last 14 days",
+    "legendSubmissions": "contact messages",
+    "legendAssessments": "assessments",
+    "mailTestTitle": "email delivery",
+    "mailTestDesc": "Send a test notification to the configured recipient to verify SMTP.",
+    "mailTestBtn": "Send test email",
+    "mailTestBusy": "Sending...",
+    "mailTestOk": "Test email sent to {{to}}. Check the inbox (and spam folder).",
+    "mailTestFail": "Test email failed. Check SMTP settings and redeploy.",
+    "noAssessments": "No assessments completed yet."
   },
   "insights": {
     "seoTitle": "Insights | Skelion Enterprises",
@@ -1146,5 +1167,153 @@
     "ctaTitle": "Still have a question?",
     "ctaDesc": "If your question is not covered here, reach out directly and we will get back to you.",
     "cta": "Contact us"
+  },
+  "assessment": {
+    "seoTitle": "Free Security Posture Assessment | Skelion Enterprises",
+    "seoDesc": "Score your organization's security posture in 5 minutes: governance, access control, infrastructure, people and resilience. Instant graded report with priority recommendations.",
+    "cmd": "> security posture check",
+    "titleA": "How exposed is ",
+    "titleB": "your organization?",
+    "sub": "Fifteen questions, five domains, one honest score. Built on the same lens our auditors apply in the field.",
+    "introP1": "This assessment measures your security posture across the five domains where breaches are actually won and lost. Each question has three answers: pick the one closest to your reality, not your ambition.",
+    "introP2": "It takes about five minutes. You get an instant graded report, domain-by-domain scoring, and priority recommendations. No login required.",
+    "start": "Start the assessment",
+    "back": "previous question",
+    "domains": {
+      "gov": "Governance & Risk",
+      "iam": "Identity & Access",
+      "infra": "Infrastructure & Testing",
+      "people": "People & Awareness",
+      "resilience": "Detection & Resilience"
+    },
+    "q": {
+      "gov1": {
+        "text": "Does your organization have documented, management-approved security policies?",
+        "a2": "Yes, reviewed at least annually and known by staff",
+        "a1": "Some policies exist but are outdated or partial",
+        "a0": "No formal security policies"
+      },
+      "gov2": {
+        "text": "Is someone formally accountable for information security?",
+        "a2": "A dedicated role (CISO or equivalent) with executive access",
+        "a1": "Responsibility is shared informally, usually with IT",
+        "a0": "Nobody owns security"
+      },
+      "gov3": {
+        "text": "Do you assess vendors and third parties for security risk?",
+        "a2": "A formal process before onboarding and periodically after",
+        "a1": "Occasionally, for major contracts only",
+        "a0": "Never"
+      },
+      "iam1": {
+        "text": "Is multi-factor authentication (MFA) enforced?",
+        "a2": "On all critical systems and remote access, without exceptions",
+        "a1": "On some systems only",
+        "a0": "No MFA anywhere"
+      },
+      "iam2": {
+        "text": "Are access rights reviewed and revoked when roles change or people leave?",
+        "a2": "A scheduled or automated review process exists",
+        "a1": "It happens sometimes, when someone remembers",
+        "a0": "No process; old accounts linger"
+      },
+      "iam3": {
+        "text": "Are privileged (admin) accounts separated and monitored?",
+        "a2": "Separate admin accounts with logging of privileged actions",
+        "a1": "Partially separated, little monitoring",
+        "a0": "The same accounts are used for everything"
+      },
+      "infra1": {
+        "text": "Are systems and software patched on a defined schedule?",
+        "a2": "SLA-driven patching, including emergency patches",
+        "a1": "Irregularly, when time allows",
+        "a0": "Rarely or never"
+      },
+      "infra2": {
+        "text": "When was your last penetration test?",
+        "a2": "Within 12 months, with findings remediated",
+        "a1": "More than a year ago",
+        "a0": "Never had one"
+      },
+      "infra3": {
+        "text": "Are backups automated, protected, and restore-tested?",
+        "a2": "Yes, and we have actually tested a restore",
+        "a1": "Backups exist but restores are untested",
+        "a0": "No reliable backups"
+      },
+      "people1": {
+        "text": "Do employees receive security awareness training?",
+        "a2": "Regularly, including phishing simulations",
+        "a1": "Once, at onboarding",
+        "a0": "None"
+      },
+      "people2": {
+        "text": "Would staff know how to report a suspicious email or incident?",
+        "a2": "Yes, a clear channel exists and is actually used",
+        "a1": "Probably not, or only some would",
+        "a0": "There is no reporting channel"
+      },
+      "people3": {
+        "text": "Is company data on personal devices (BYOD) controlled?",
+        "a2": "Managed via policy and technical controls",
+        "a1": "Informal rules only",
+        "a0": "Completely uncontrolled"
+      },
+      "res1": {
+        "text": "Do you have an incident response plan?",
+        "a2": "Documented and exercised at least once",
+        "a1": "A draft exists but was never tested",
+        "a0": "None"
+      },
+      "res2": {
+        "text": "Could you detect a breach in progress?",
+        "a2": "Monitoring and alerting are in place and reviewed",
+        "a1": "Some logs exist but nobody watches them",
+        "a0": "No visibility at all"
+      },
+      "res3": {
+        "text": "Could the business operate through a major outage or ransomware event?",
+        "a2": "A continuity plan exists and has been tested",
+        "a1": "A theoretical plan exists on paper",
+        "a0": "No plan; we would improvise"
+      }
+    },
+    "idTitle": "Almost there",
+    "idSub": "Optional: tell us who you are so we can follow up with context. Leave blank for an anonymous score.",
+    "idName": "Your name (optional)",
+    "idOrg": "Organization (optional)",
+    "idMail": "Work email (optional)",
+    "getResults": "Compute my score",
+    "computing": "Scoring...",
+    "refLabel": "reference",
+    "grades": {
+      "A": "Hardened",
+      "B": "Managed",
+      "C": "Developing",
+      "D": "Exposed",
+      "E": "Critical"
+    },
+    "gradeDesc": {
+      "A": "Your posture reflects a mature, actively managed security program. The remaining work is sharpening the edge: adversary simulation, continuous validation, and keeping pace with your threat model.",
+      "B": "Solid foundations with identifiable gaps. You are ahead of most peers, but a motivated attacker would still find seams. Targeted hardening closes them.",
+      "C": "A developing posture: real controls exist, but coverage is uneven and an attacker has meaningful room to operate. Prioritized remediation would change your risk profile quickly.",
+      "D": "Your organization is exposed. Several fundamental controls are missing or unmanaged, and a routine attack would likely succeed. This is recoverable, but it needs structured attention now.",
+      "E": "Critical exposure. The basics that stop opportunistic attacks are largely absent. The good news: starting from here, the first improvements deliver dramatic risk reduction."
+    },
+    "byDomain": "score by domain",
+    "recsTitle": "priority recommendations",
+    "recs": {
+      "gov": "Establish governance: approved policies, clear security ownership, and third-party risk review. Our GRC practice builds this with you, mapped to ISO 27001.",
+      "iam": "Close identity gaps first: enforce MFA everywhere, review access rights, separate admin accounts. Then validate with a penetration test.",
+      "infra": "Get patching under SLA, test your restores, and put your infrastructure through an adversary-grade penetration test to find what scanning misses.",
+      "people": "Your people are your widest attack surface. Deploy behavior-changing training with phishing simulation and a clear incident reporting channel.",
+      "resilience": "Build detection and response capability: monitoring, an exercised incident response plan, and executive-level security direction. A vCISO accelerates all three."
+    },
+    "recCta": "See how we fix this",
+    "closing": "This self-assessment is a directional signal, not an audit. For an evidence-based view of your posture, talk to us.",
+    "contactCta": "Request a real assessment",
+    "failed": "Could not submit the assessment. Check your connection and retry.",
+    "rateLimited": "Too many assessments from this network right now. Try again in a few minutes.",
+    "retry": "Retry"
   }
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { ContactSchema } from '../validation.js';
+import { submissionReference } from '../assessment.js';
 
 export function contactRouter(store, mailer) {
   const router = Router();
@@ -14,7 +15,7 @@ export function contactRouter(store, mailer) {
       const id = await store.createSubmission(d);
       // fire-and-forget: email must never block or fail the response
       if (mailer?.enabled) mailer.notifyContact({ ...d, id }).catch(() => {});
-      res.status(201).json({ ok: true, id });
+      res.status(201).json({ ok: true, id, reference: submissionReference(id) });
     } catch (e) { next(e); }
   });
   return router;

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // Deployment domain: set PUBLIC_ORIGIN at build time (Hostinger env vars work).
-const SITE = (process.env.PUBLIC_ORIGIN || 'https://skelionenterprises.com').replace(/\/$/, '');
+const SITE = (process.env.PUBLIC_ORIGIN || 'https://skeliontech.com').replace(/\/$/, '');
 const en = JSON.parse(readFileSync(resolve(root, 'src/i18n/locales/en.json'), 'utf8'));
 const shell = readFileSync(resolve(root, 'dist/index.html'), 'utf8');
 
@@ -30,6 +30,7 @@ const routes = [
   { path: '/insights', title: en.insights.seoTitle, desc: en.insights.seoDesc },
   { path: '/about', title: en.about.seoTitle, desc: en.about.seoDesc },
   { path: '/faq', title: en.faq.seoTitle, desc: en.faq.seoDesc },
+  { path: '/assessment', title: en.assessment.seoTitle, desc: en.assessment.seoDesc },
 ];
 
 const JSON_LD = {
@@ -85,7 +86,7 @@ console.log(`[prerender] wrote ${count} route HTML files with baked SEO meta`);
 for (const f of ['sitemap.xml', 'robots.txt']) {
   const p = resolve(root, 'dist', f);
   try {
-    const txt = readFileSync(p, 'utf8').replaceAll('https://skelionenterprises.com', SITE);
+    const txt = readFileSync(p, 'utf8').replaceAll(/https:\/\/skelion(enterprises|tech)\.com/g, SITE);
     writeFileSync(p, txt);
   } catch { /* file absent: nothing to rewrite */ }
 }

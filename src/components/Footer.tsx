@@ -24,6 +24,7 @@ export default function Footer() {
             <FootLink to="/licenses">{t('footer.licensing')}</FootLink>
             <FootLink to="/physical">{t('footer.physical')}</FootLink>
             <FootLink to="/insights">{t('footer.insights')}</FootLink>
+            <FootLink to="/assessment">{t('footer.assessment')}</FootLink>
           </FootCol>
           <FootCol title={t('footer.company')}>
             <FootLink to="/about">{t('footer.about')}</FootLink>

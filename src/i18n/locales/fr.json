@@ -15,7 +15,8 @@
     "menuLabel": "Afficher le menu",
     "skip": "Aller au contenu",
     "langLabel": "Changer de langue",
-    "insights": "Analyses"
+    "insights": "Analyses",
+    "assessment": "Diagnostic sécurité"
   },
   "home": {
     "seoTitle": "Skelion Enterprises | Cybersécurité, Tests d'intrusion, GRC & Licences",
@@ -42,7 +43,12 @@
       "Sécurisé par la politique",
       "Vérifié par l'audit",
       "Éprouvé par l'adversaire"
-    ]
+    ],
+    "assessCmd": "connaissez votre exposition",
+    "assessTitle": "Évaluez votre posture de sécurité en cinq minutes",
+    "assessDesc": "Quinze questions couvrant gouvernance, accès, infrastructure, facteur humain et résilience. Rapport noté instantané avec les priorités qu'un auditeur relèverait en premier.",
+    "assessCta": "Lancer l'évaluation gratuite",
+    "assessMeta": "sans inscription · 5 min · rapport instantané"
   },
   "stats": {
     "s1n": "6",
@@ -370,7 +376,8 @@
     "sent": "Envoyé ✓",
     "failed": "> echec_transmission, réessayez ou appelez-nous",
     "note": "// vos informations ne servent qu'à répondre à cette demande",
-    "configNotice": ""
+    "configNotice": "",
+    "refNote": "Votre référence :"
   },
   "footer": {
     "blurb": "Cybersécurité à spectre complet : offensive, gouvernance, leadership, formation, licences et sécurité physique.",
@@ -390,7 +397,8 @@
     "company": "Entreprise",
     "about": "À propos",
     "faq": "FAQ",
-    "insights": "Analyses"
+    "insights": "Analyses",
+    "assessment": "Diagnostic sécurité"
   },
   "pages": {
     "pentesting": {
@@ -1016,7 +1024,20 @@
     "subscribersTitle": "Abonnés à la lettre d'information",
     "exportCsv": "Exporter CSV",
     "noSubs": "// aucun abonné pour l'instant",
-    "delSubConfirm": "Retirer cet abonné ?"
+    "delSubConfirm": "Retirer cet abonné ?",
+    "tabAssessments": "Évaluations",
+    "statAssessments": "évaluations",
+    "statAvgScore": "score moyen /30",
+    "activity14d": "activité, 14 derniers jours",
+    "legendSubmissions": "messages de contact",
+    "legendAssessments": "évaluations",
+    "mailTestTitle": "envoi d'e-mails",
+    "mailTestDesc": "Envoyez une notification de test au destinataire configuré pour vérifier le SMTP.",
+    "mailTestBtn": "Envoyer un e-mail de test",
+    "mailTestBusy": "Envoi...",
+    "mailTestOk": "E-mail de test envoyé à {{to}}. Vérifiez la boîte de réception (et les indésirables).",
+    "mailTestFail": "Échec de l'e-mail de test. Vérifiez les paramètres SMTP puis redéployez.",
+    "noAssessments": "Aucune évaluation réalisée pour l'instant."
   },
   "insights": {
     "seoTitle": "Analyses | Skelion Enterprises",
@@ -1146,5 +1167,153 @@
     "ctaTitle": "Une autre question ?",
     "ctaDesc": "Si votre question ne figure pas ici, contactez-nous directement et nous vous répondrons.",
     "cta": "Nous contacter"
+  },
+  "assessment": {
+    "seoTitle": "Évaluation gratuite de posture de sécurité | Skelion Enterprises",
+    "seoDesc": "Évaluez la posture de sécurité de votre organisation en 5 minutes : gouvernance, contrôle des accès, infrastructure, facteur humain et résilience. Rapport noté instantané avec recommandations prioritaires.",
+    "cmd": "> diagnostic de posture sécurité",
+    "titleA": "Quel est le niveau d'exposition de ",
+    "titleB": "votre organisation ?",
+    "sub": "Quinze questions, cinq domaines, un score honnête. Construit sur la même grille que nos auditeurs appliquent sur le terrain.",
+    "introP1": "Cette évaluation mesure votre posture de sécurité sur les cinq domaines où les compromissions se gagnent ou se perdent réellement. Chaque question propose trois réponses : choisissez celle qui correspond à votre réalité, pas à vos ambitions.",
+    "introP2": "Comptez environ cinq minutes. Vous obtenez un rapport noté instantané, un score par domaine et des recommandations prioritaires. Aucun compte requis.",
+    "start": "Démarrer l'évaluation",
+    "back": "question précédente",
+    "domains": {
+      "gov": "Gouvernance & Risques",
+      "iam": "Identités & Accès",
+      "infra": "Infrastructure & Tests",
+      "people": "Facteur humain & Sensibilisation",
+      "resilience": "Détection & Résilience"
+    },
+    "q": {
+      "gov1": {
+        "text": "Votre organisation dispose-t-elle de politiques de sécurité documentées et approuvées par la direction ?",
+        "a2": "Oui, revues au moins une fois par an et connues du personnel",
+        "a1": "Des politiques existent mais sont obsolètes ou partielles",
+        "a0": "Aucune politique de sécurité formelle"
+      },
+      "gov2": {
+        "text": "Une personne est-elle formellement responsable de la sécurité de l'information ?",
+        "a2": "Un rôle dédié (RSSI ou équivalent) avec accès à la direction",
+        "a1": "Responsabilité partagée de manière informelle, souvent avec l'IT",
+        "a0": "Personne ne porte la sécurité"
+      },
+      "gov3": {
+        "text": "Évaluez-vous les risques de sécurité de vos fournisseurs et tiers ?",
+        "a2": "Un processus formel avant intégration, puis périodiquement",
+        "a1": "Occasionnellement, pour les contrats majeurs uniquement",
+        "a0": "Jamais"
+      },
+      "iam1": {
+        "text": "L'authentification multifacteur (MFA) est-elle imposée ?",
+        "a2": "Sur tous les systèmes critiques et les accès distants, sans exception",
+        "a1": "Sur certains systèmes seulement",
+        "a0": "Aucune MFA"
+      },
+      "iam2": {
+        "text": "Les droits d'accès sont-ils revus et révoqués lors des changements de poste ou des départs ?",
+        "a2": "Un processus de revue planifié ou automatisé existe",
+        "a1": "Cela arrive parfois, quand quelqu'un y pense",
+        "a0": "Aucun processus ; les anciens comptes subsistent"
+      },
+      "iam3": {
+        "text": "Les comptes à privilèges (admin) sont-ils séparés et surveillés ?",
+        "a2": "Comptes admin séparés avec journalisation des actions privilégiées",
+        "a1": "Partiellement séparés, peu de surveillance",
+        "a0": "Les mêmes comptes servent à tout"
+      },
+      "infra1": {
+        "text": "Les systèmes et logiciels sont-ils mis à jour selon un calendrier défini ?",
+        "a2": "Correctifs sous SLA, y compris les correctifs d'urgence",
+        "a1": "Irrégulièrement, quand le temps le permet",
+        "a0": "Rarement ou jamais"
+      },
+      "infra2": {
+        "text": "À quand remonte votre dernier test d'intrusion ?",
+        "a2": "Moins de 12 mois, avec remédiation des constats",
+        "a1": "Plus d'un an",
+        "a0": "Jamais réalisé"
+      },
+      "infra3": {
+        "text": "Les sauvegardes sont-elles automatisées, protégées et testées en restauration ?",
+        "a2": "Oui, et nous avons réellement testé une restauration",
+        "a1": "Des sauvegardes existent mais les restaurations ne sont pas testées",
+        "a0": "Pas de sauvegardes fiables"
+      },
+      "people1": {
+        "text": "Les employés reçoivent-ils une formation de sensibilisation à la sécurité ?",
+        "a2": "Régulièrement, avec des simulations de phishing",
+        "a1": "Une fois, à l'embauche",
+        "a0": "Aucune"
+      },
+      "people2": {
+        "text": "Le personnel saurait-il signaler un e-mail suspect ou un incident ?",
+        "a2": "Oui, un canal clair existe et il est réellement utilisé",
+        "a1": "Probablement pas, ou seulement certains",
+        "a0": "Il n'existe aucun canal de signalement"
+      },
+      "people3": {
+        "text": "Les données de l'entreprise sur les appareils personnels (BYOD) sont-elles contrôlées ?",
+        "a2": "Encadrées par une politique et des contrôles techniques",
+        "a1": "Règles informelles uniquement",
+        "a0": "Totalement incontrôlées"
+      },
+      "res1": {
+        "text": "Disposez-vous d'un plan de réponse aux incidents ?",
+        "a2": "Documenté et exercé au moins une fois",
+        "a1": "Un brouillon existe mais n'a jamais été testé",
+        "a0": "Aucun"
+      },
+      "res2": {
+        "text": "Pourriez-vous détecter une compromission en cours ?",
+        "a2": "Supervision et alertes en place et suivies",
+        "a1": "Des journaux existent mais personne ne les regarde",
+        "a0": "Aucune visibilité"
+      },
+      "res3": {
+        "text": "L'activité pourrait-elle continuer lors d'une panne majeure ou d'un ransomware ?",
+        "a2": "Un plan de continuité existe et a été testé",
+        "a1": "Un plan théorique existe sur le papier",
+        "a0": "Aucun plan ; nous improviserions"
+      }
+    },
+    "idTitle": "Presque terminé",
+    "idSub": "Facultatif : dites-nous qui vous êtes pour un suivi contextualisé. Laissez vide pour un score anonyme.",
+    "idName": "Votre nom (facultatif)",
+    "idOrg": "Organisation (facultatif)",
+    "idMail": "E-mail professionnel (facultatif)",
+    "getResults": "Calculer mon score",
+    "computing": "Calcul en cours...",
+    "refLabel": "référence",
+    "grades": {
+      "A": "Durci",
+      "B": "Maîtrisé",
+      "C": "En construction",
+      "D": "Exposé",
+      "E": "Critique"
+    },
+    "gradeDesc": {
+      "A": "Votre posture reflète un programme de sécurité mature et activement piloté. Le travail restant consiste à affûter la lame : simulation d'adversaire, validation continue et alignement permanent sur votre modèle de menace.",
+      "B": "Des fondations solides avec des lacunes identifiables. Vous êtes en avance sur la plupart de vos pairs, mais un attaquant motivé trouverait encore des interstices. Un durcissement ciblé les referme.",
+      "C": "Une posture en construction : de vrais contrôles existent, mais la couverture est inégale et un attaquant dispose d'une réelle marge de manœuvre. Une remédiation priorisée changerait rapidement votre profil de risque.",
+      "D": "Votre organisation est exposée. Plusieurs contrôles fondamentaux sont absents ou non pilotés, et une attaque ordinaire aboutirait probablement. C'est rattrapable, mais cela exige une attention structurée dès maintenant.",
+      "E": "Exposition critique. Les fondamentaux qui arrêtent les attaques opportunistes sont largement absents. La bonne nouvelle : en partant d'ici, les premières améliorations réduisent le risque de façon spectaculaire."
+    },
+    "byDomain": "score par domaine",
+    "recsTitle": "recommandations prioritaires",
+    "recs": {
+      "gov": "Établissez la gouvernance : politiques approuvées, responsabilité claire de la sécurité et revue des risques tiers. Notre practice GRC la construit avec vous, alignée sur l'ISO 27001.",
+      "iam": "Comblez d'abord les failles d'identité : imposez la MFA partout, revoyez les droits d'accès, séparez les comptes admin. Puis validez par un test d'intrusion.",
+      "infra": "Placez les correctifs sous SLA, testez vos restaurations et soumettez votre infrastructure à un test d'intrusion de niveau adversaire pour trouver ce que les scanners manquent.",
+      "people": "Vos équipes sont votre plus grande surface d'attaque. Déployez une formation qui change les comportements, avec simulations de phishing et un canal clair de signalement d'incidents.",
+      "resilience": "Construisez la capacité de détection et de réponse : supervision, plan de réponse aux incidents exercé et direction sécurité de niveau exécutif. Un vCISO accélère les trois."
+    },
+    "recCta": "Voir comment nous corrigeons cela",
+    "closing": "Cette auto-évaluation est un signal directionnel, pas un audit. Pour une vision de votre posture fondée sur des preuves, parlons-en.",
+    "contactCta": "Demander une évaluation réelle",
+    "failed": "Impossible d'envoyer l'évaluation. Vérifiez votre connexion et réessayez.",
+    "rateLimited": "Trop d'évaluations depuis ce réseau pour le moment. Réessayez dans quelques minutes.",
+    "retry": "Réessayer"
   }
 }

@@ -3,12 +3,48 @@ import { requireAuth } from '../auth.js';
 import { PostSchema } from '../validation.js';
 
 /** /api/admin — all endpoints require a valid session. */
-export function adminRouter(store, config) {
+export function adminRouter(store, config, mailer) {
   const router = Router();
   router.use(requireAuth(config));
 
+  router.get('/timeline', async (_req, res, next) => {
+    try { res.json({ days: await store.timeline(14) }); } catch (e) { next(e); }
+  });
+
+  router.get('/assessments', async (req, res, next) => {
+    try {
+      const limit = Math.min(Number(req.query.limit) || 50, 200);
+      const offset = Math.max(Number(req.query.offset) || 0, 0);
+      res.json(await store.listAssessments(limit, offset));
+    } catch (e) { next(e); }
+  });
+
+  router.get('/assessments/:id', async (req, res, next) => {
+    try {
+      const a = await store.getAssessment(Number(req.params.id));
+      if (!a) return res.status(404).json({ error: 'not_found' });
+      res.json(a);
+    } catch (e) { next(e); }
+  });
+
+  router.delete('/assessments/:id', async (req, res, next) => {
+    try {
+      const ok = await store.deleteAssessment(Number(req.params.id));
+      if (!ok) return res.status(404).json({ error: 'not_found' });
+      res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  router.post('/test-email', async (_req, res) => {
+    const result = await mailer.sendTest();
+    res.status(result.ok ? 200 : 502).json(result);
+  });
+
   router.get('/stats', async (_req, res, next) => {
-    try { res.json(await store.stats()); } catch (e) { next(e); }
+    try {
+      const [base, extra] = await Promise.all([store.stats(), store.statsExtra()]);
+      res.json({ ...base, ...extra });
+    } catch (e) { next(e); }
   });
 
   // ---- submissions ----

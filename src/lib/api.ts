@@ -137,3 +137,31 @@ export interface PostInput {
   body_fr: string;
   published: boolean;
 }
+
+// ---- Security posture assessment ----
+export interface DomainScore { points: number; max: number; pct: number }
+export interface AssessmentResult {
+  ok: boolean; reference: string; total_score: number; pct: number; grade: string;
+  domain_scores: Record<string, DomainScore>;
+}
+export interface AdminAssessmentRow {
+  id: number; name: string; organization: string; email: string;
+  domain_scores: Record<string, DomainScore>; total_score: number; grade: string;
+  locale: string; created_at: string;
+}
+export interface TimelineDay { day: string; submissions: number; assessments: number }
+
+const jsonHeaders = { 'Content-Type': 'application/json' };
+
+export const assessmentApi = {
+  submit: (payload: { answers: Record<string, 0 | 1 | 2>; name: string; organization: string; email: string; locale: string; website: string }) =>
+    fetch('/api/v1/assessment', { method: 'POST', headers: jsonHeaders, body: JSON.stringify(payload) }).then(json<AssessmentResult>),
+};
+
+export const adminExtras = {
+  assessments: () => fetch('/api/admin/assessments').then(json<{ total: number; items: AdminAssessmentRow[] }>),
+  assessment: (id: number) => fetch(`/api/admin/assessments/${id}`).then(json<AdminAssessmentRow & { answers: Record<string, number> }>),
+  deleteAssessment: (id: number) => fetch(`/api/admin/assessments/${id}`, { method: 'DELETE' }).then(json<{ ok: boolean }>),
+  timeline: () => fetch('/api/admin/timeline').then(json<{ days: TimelineDay[] }>),
+  testEmail: () => fetch('/api/admin/test-email', { method: 'POST' }).then(json<{ ok: boolean; to?: string; error?: string }>),
+};

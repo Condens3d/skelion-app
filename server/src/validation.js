@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ALL_QUESTION_IDS } from './assessment.js';
 
 export const ContactSchema = z.object({
   name: z.string().trim().min(1).max(200),
@@ -33,3 +34,17 @@ export function slugify(s) {
   return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 120);
 }
+
+export const AssessmentSchema = z.object({
+  name: z.string().trim().max(120).optional().default(''),
+  organization: z.string().trim().max(160).optional().default(''),
+  email: z.union([z.literal(''), z.string().trim().email().max(254)]).optional().default(''),
+  locale: z.enum(['en', 'fr']).default('en'),
+  website: z.string().max(0).optional().default(''), // honeypot
+  answers: z
+    .record(z.string(), z.union([z.literal(0), z.literal(1), z.literal(2)]))
+    .refine(
+      (a) => ALL_QUESTION_IDS.every((id) => id in a) && Object.keys(a).length === ALL_QUESTION_IDS.length,
+      { message: 'answers must cover exactly the defined question set' }
+    ),
+});
