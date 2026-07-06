@@ -14,8 +14,9 @@ const SITE = process.env.PUBLIC_ORIGIN || 'https://skeliontech.com';
 const SEC_CONTACT = process.env.SECURITY_CONTACT || 'info@skeliontech.com';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function createApp(store, config, log = console, mailer = null) {
+export function createApp(store, config, log = console, mailer = null, opts = {}) {
   const app = express();
+  const dbError = opts.dbError || null;
   // Reuse the mailer verified at boot when provided; otherwise build one
   // (keeps existing tests, which call createApp without a mailer, working).
   mailer = mailer || createMailer(config, log);
@@ -42,7 +43,7 @@ export function createApp(store, config, log = console, mailer = null) {
   app.use(cookieParser());
 
   // ---- API ----
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver, api: 'v1' }));
+  app.get('/api/health', (_req, res) => res.json({ status: store ? 'ok' : 'degraded', driver: store ? store.driver : null, database: Boolean(store), api: 'v1' }));
 
   // Secure operator diagnostics: verifies DB + SMTP live and returns a plain
   // checklist with the exact remedy for anything failing. Gated by OPS_KEY.
@@ -52,23 +53,25 @@ export function createApp(store, config, log = console, mailer = null) {
     const checks = [];
 
     // 1. Database
-    let dbOk = false, dbErr = null;
-    try { dbOk = await store.ping(); } catch (e) { dbErr = e.message; }
+    let dbOk = false, dbErr = dbError;
+    if (store) { try { dbOk = await store.ping(); } catch (e) { dbErr = e.message; } }
+    else { dbErr = dbError || 'Database did not connect at boot.'; }
     checks.push({
       key: 'database',
       ok: dbOk,
-      detail: dbOk ? `Connected (${store.driver}).` : `NOT connected (${store.driver}). ${dbErr || ''}`,
+      detail: dbOk ? `Connected (${store.driver}).` : `NOT connected. ${dbErr || ''}`,
       remedy: dbOk ? null : (config.isProd
-        ? 'Set DATABASE_URL to your Supabase Session-pooler URI (postgresql://..., port 5432). If it is set but failing on TLS, add PGSSL_NO_VERIFY=1. Then redeploy.'
+        ? 'Set DATABASE_URL to your Supabase Session-pooler URI (postgresql://..., port 5432). If it is set but failing on TLS/certificate, add PGSSL_NO_VERIFY=1. Then redeploy.'
         : 'Local SQLite could not open. Check SQLITE_PATH is writable.'),
     });
 
     // 2. Production must be Postgres
+    const driver = store ? store.driver : null;
     checks.push({
       key: 'db_driver_for_prod',
-      ok: !config.isProd || store.driver === 'pg',
-      detail: config.isProd ? `Production driver: ${store.driver}` : 'Development (SQLite is fine here).',
-      remedy: (config.isProd && store.driver !== 'pg') ? 'Production is not on PostgreSQL. Set DATABASE_URL and redeploy.' : null,
+      ok: !config.isProd || driver === 'pg',
+      detail: config.isProd ? `Production driver: ${driver || 'none (DB down)'}` : 'Development (SQLite is fine here).',
+      remedy: (config.isProd && driver !== 'pg') ? 'Production is not on PostgreSQL. Set DATABASE_URL and redeploy.' : null,
     });
 
     // 3. Email
@@ -90,7 +93,7 @@ export function createApp(store, config, log = console, mailer = null) {
 
     // 5. Admin account exists
     let adminExists = false;
-    try { adminExists = (await store.countAdmins?.()) > 0; } catch { /* older driver */ }
+    try { adminExists = store ? (await store.countAdmins?.()) > 0 : false; } catch { /* older driver */ }
     checks.push({
       key: 'admin_account',
       ok: adminExists,
@@ -100,7 +103,7 @@ export function createApp(store, config, log = console, mailer = null) {
 
     let counts = { submissions: null, clients: null };
     try {
-      const [subs, clients] = await Promise.all([store.stats().catch(() => null), store.listClients().catch(() => null)]);
+      const [subs, clients] = store ? await Promise.all([store.stats().catch(() => null), store.listClients().catch(() => null)]) : [null, null];
       counts = { submissions: subs?.submissions ?? null, clients: Array.isArray(clients) ? clients.length : null };
     } catch { /* non-fatal */ }
 
@@ -122,12 +125,23 @@ export function createApp(store, config, log = console, mailer = null) {
     const result = await mailer.sendTest();
     res.status(result.ok ? 200 : 502).json(result);
   });
+  // If the database failed to connect at boot, keep the server alive but return
+  // a clear, actionable error for any data route instead of crashing per request.
+  if (!store) {
+    app.use('/api/contact', (_req, res) => res.status(503).json({ error: 'database_unavailable', detail: dbError }));
+    app.use('/api/auth', (_req, res) => res.status(503).json({ error: 'database_unavailable', detail: dbError }));
+    app.use('/api/v1', (_req, res) => res.status(503).json({ error: 'database_unavailable', detail: dbError }));
+    app.use('/api/admin', (_req, res) => res.status(503).json({ error: 'database_unavailable', detail: dbError }));
+    app.use('/api/portal', (_req, res) => res.status(503).json({ error: 'database_unavailable', detail: dbError }));
+    app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));
+  } else {
   app.use('/api/contact', contactRouter(store, mailer));
   app.use('/api/auth', authRouter(store, config));
   app.use('/api/v1', publicApiRouter(store, mailer));
   app.use('/api/admin', adminRouter(store, config, mailer));
   app.use('/api/portal', portalRouter(store, config));
   app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));
+  }
 
   // ---- security.txt (RFC 9116) ----
   app.get(['/.well-known/security.txt', '/security.txt'], (_req, res) => {
