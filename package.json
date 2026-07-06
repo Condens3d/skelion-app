@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx tsc -b && npx vite build && node scripts/prerender.mjs",
+    "build": "tsc -b && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "server:dev": "npm --prefix server run dev",
     "server:start": "npm --prefix server start",
@@ -13,8 +13,7 @@
     "test:api": "npm --prefix server test",
     "test:e2e": "playwright test",
     "test": "npm run test:api",
-    "start:full": "npm run build && node server/src/index.js",
-    "postinstall": "npm --prefix server install && npm run build"
+    "start:full": "npm --prefix server install && npm run build && node server/src/index.js"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",

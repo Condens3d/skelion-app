@@ -6,6 +6,7 @@ RUN npm ci --no-audit --no-fund
 COPY index.html vite.config.ts tsconfig*.json tailwind.config.ts postcss.config.js ./
 COPY public ./public
 COPY src ./src
+COPY scripts ./scripts
 RUN npm run build
 
 # ---------- runtime: Node serves API + static SPA ----------
