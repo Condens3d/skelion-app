@@ -12,8 +12,7 @@
     "start": "node server/src/index.js",
     "test:api": "npm --prefix server test",
     "test:e2e": "playwright test",
-    "test": "npm run test:api",
-    "start:full": "npm --prefix server install && npm run build && node server/src/index.js"
+    "test": "npm run test:api"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",
