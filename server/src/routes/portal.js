@@ -3,6 +3,8 @@ import { rateLimit } from 'express-rate-limit';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { issuePortalSession, clearPortalSession, requirePortalAuth } from '../auth.js';
+import { FRAMEWORKS, MATURITY, CONTROLS, THEMES, computeScores, LIBRARY_VERSION } from '../compliance.js';
+import { ComplianceStatusSchema } from '../validation.js';
 
 const LoginSchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(1).max(200) });
 const PasswordSchema = z.object({ current: z.string().min(1).max(200), next: z.string().min(12).max(200) });
@@ -75,6 +77,29 @@ export function portalRouter(store, config) {
       if (!eng || Number(eng.client_id) !== Number(req.client.cid)) return res.status(404).json({ error: 'not_found' });
       const findings = await store.listFindingsByEngagement(eng.id);
       res.json({ ...eng, findings });
+    } catch (e) { next(e); }
+  });
+
+  // Compliance program for the authenticated tenant.
+  router.get('/compliance', guard, async (req, res, next) => {
+    try {
+      const statuses = await store.listCompliance(req.client.cid);
+      res.json({
+        version: LIBRARY_VERSION,
+        frameworks: FRAMEWORKS, maturity: MATURITY, themes: THEMES, controls: CONTROLS,
+        statuses,
+        scores: computeScores(statuses),
+      });
+    } catch (e) { next(e); }
+  });
+
+  router.put('/compliance/:controlId', guard, async (req, res, next) => {
+    const parsed = ComplianceStatusSchema.safeParse({ ...req.body, control_id: req.params.controlId });
+    if (!parsed.success) return res.status(400).json({ error: 'validation_failed' });
+    try {
+      await store.upsertCompliance(req.client.cid, parsed.data.control_id, parsed.data);
+      const statuses = await store.listCompliance(req.client.cid);
+      res.json({ ok: true, scores: computeScores(statuses) });
     } catch (e) { next(e); }
   });
 

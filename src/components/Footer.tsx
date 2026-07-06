@@ -11,7 +11,7 @@ export default function Footer() {
           <div>
             <Logo variant="lockup" imgClass="h-[38px] w-auto block" />
             <p className="text-paper-dim text-[.9rem] my-4 max-w-[310px]">{t('footer.blurb')}</p>
-            <span className="mini-mono block">skelionenterprises.com · +237 694 429 113</span>
+            <span className="mini-mono block">skeliontech.com · +237 694 429 113</span>
             <a href="/rss.xml" className="mini-mono inline-flex items-center gap-1.5 mt-2.5 hover:!text-cyan before:content-['>_']">RSS</a>
           </div>
           <FootCol title={t('footer.services')}>

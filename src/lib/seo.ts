@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 // Canonical/OG URLs follow whatever origin the site is actually served from
-// (skelionenterprises.com, skeliontech.com, localhost). SSR-safe fallback.
+// Follows the serving origin (skeliontech.com, localhost). SSR-safe fallback.
 const SITE =
   typeof window !== 'undefined' && window.location?.origin
     ? window.location.origin

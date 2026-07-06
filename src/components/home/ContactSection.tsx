@@ -19,7 +19,7 @@ export default function ContactSection() {
               <small>{t('contact.vPhoneNote')}</small>
             </Row>
             <Row k={t('contact.kWeb')}>
-              <a href="https://skelionenterprises.com">skelionenterprises.com</a>
+              <a href="mailto:info@skeliontech.com">info@skeliontech.com</a>
             </Row>
             <Row k={t('contact.kCoverage')}>
               {t('contact.vCoverage')}

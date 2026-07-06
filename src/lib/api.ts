@@ -245,3 +245,29 @@ export const opsApi = {
   diagnostics: (key: string) => fetch('/api/ops/diagnostics', { headers: { 'x-ops-key': key } }).then(json<Diagnostics>),
   testEmail: (key: string) => fetch('/api/ops/test-email', { method: 'POST', headers: { 'x-ops-key': key } }).then(json<{ ok: boolean; to?: string; error?: string }>),
 };
+
+// ---- compliance posture ----
+export interface CFramework { id: string; name: string; short: string; authority: string; verified: boolean }
+export interface CControl { id: string; theme: string; title: string; desc: string; unverified?: boolean; mappings: Record<string, string | null> }
+export interface CScoreBucket { points: number; max: number; applicable: number; controls: number; pct: number }
+export interface CScores { overall: number; byTheme: Record<string, CScoreBucket>; byFramework: Record<string, CScoreBucket>; version: string }
+export interface CStatus { control_id: string; maturity: string; evidence: string; owner: string; updated_at: string }
+export interface ComplianceProgram {
+  version: string;
+  frameworks: Record<string, CFramework>;
+  maturity: Record<string, { value: number | null; label: string }>;
+  themes: string[];
+  controls: CControl[];
+  statuses: Record<string, CStatus>;
+  scores: CScores;
+}
+export const complianceApi = {
+  get: () => fetch('/api/portal/compliance').then(json<ComplianceProgram>),
+  update: (controlId: string, d: { maturity: string; evidence: string; owner: string }) =>
+    fetch(`/api/portal/compliance/${controlId}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(d) }).then(json<{ ok: boolean; scores: CScores }>),
+};
+export const adminComplianceApi = {
+  get: (clientId: number) => fetch(`/api/admin/clients/${clientId}/compliance`).then(json<ComplianceProgram>),
+  update: (clientId: number, controlId: string, d: { maturity: string; evidence: string; owner: string }) =>
+    fetch(`/api/admin/clients/${clientId}/compliance/${controlId}`, { method: 'PUT', headers: jsonHeaders, body: JSON.stringify(d) }).then(json<{ ok: boolean; scores: CScores }>),
+};

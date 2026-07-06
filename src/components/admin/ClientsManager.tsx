@@ -1,8 +1,9 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  adminPortal, AdminClient, AdminClientUser, AdminEngagementRow, Finding, EngagementInput, FindingInput, ApiError,
+  adminPortal, adminComplianceApi, AdminClient, AdminClientUser, AdminEngagementRow, Finding, EngagementInput, FindingInput, ApiError,
 } from '../../lib/api';
+import ComplianceDashboard from '../ComplianceDashboard';
 
 /** Admin-side provisioning for the client portal: organizations, their users,
  *  engagements, and findings. Drill-down: org -> (users, engagements) -> findings. */
@@ -61,6 +62,7 @@ export default function ClientsManager() {
               <div className="mt-5 pt-5 border-t border-soft grid gap-7">
                 <UsersPanel clientId={c.id} />
                 <EngagementsPanel clientId={c.id} onChanged={load} />
+                <CompliancePanel clientId={c.id} />
                 <button onClick={() => remove(c.id)} className="w-fit font-mono text-[.75rem] text-termred hover:underline">{t('admin.clients.delClient')}</button>
               </div>
             )}
@@ -282,6 +284,27 @@ function FindingsPanel({ engagementId }: { engagementId: number }) {
         ))}
         {items.length === 0 && <span className="font-mono text-[.75rem] text-paper-dim">{t('admin.clients.noFindings')}</span>}
       </div>
+    </div>
+  );
+}
+
+function CompliancePanel({ clientId }: { clientId: number }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setOpen(!open)} className="font-mono text-[.78rem] text-cyan hover:underline">
+        &gt; {t('admin.clients.compliance')} {open ? '▾' : '▸'}
+      </button>
+      {open && (
+        <div className="mt-4">
+          <ComplianceDashboard
+            load={() => adminComplianceApi.get(clientId)}
+            save={(cid, d) => adminComplianceApi.update(clientId, cid, d)}
+            editable
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -22,6 +22,7 @@ export const config = {
   adminPassword: process.env.ADMIN_PASSWORD || '',
   trustProxy: process.env.TRUST_PROXY === '1',
   opsKey: process.env.OPS_KEY || '',
+  publicOrigin: process.env.PUBLIC_ORIGIN || '',
   // Email notifications (optional). If SMTP_HOST is unset, submissions are stored
   // in the admin panel only and no email is sent (graceful degradation).
   mail: {

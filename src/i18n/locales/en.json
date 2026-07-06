@@ -344,7 +344,7 @@
     "sub": "Tell us what you're protecting and what keeps you up at night. We respond with a scoped, honest proposal, no generic sales decks.",
     "kPhone": "Phone",
     "vPhoneNote": "// WhatsApp available",
-    "kWeb": "Web",
+    "kWeb": "EMAIL",
     "kCoverage": "Coverage",
     "vCoverage": "Cameroon · Central Africa · Remote worldwide",
     "vCoverageNote": "// on-site & remote delivery",
@@ -1078,7 +1078,8 @@
       "f_description": "Description (Markdown)",
       "f_impact": "Business impact (Markdown)",
       "f_remediation": "Remediation (Markdown)",
-      "noFindings": "no findings yet"
+      "noFindings": "no findings yet",
+      "compliance": "Compliance posture"
     },
     "tabClients": "Clients",
     "ops": {
@@ -1458,6 +1459,45 @@
       "resolved": "Resolved",
       "accepted_risk": "Risk accepted",
       "closed": "Closed"
+    },
+    "tabEngagements": "Engagements",
+    "tabCompliance": "Compliance"
+  },
+  "compliance": {
+    "loading": "loading compliance program...",
+    "overall": "overall posture",
+    "unverified": "unverified",
+    "controlsApplicable": "controls applicable",
+    "allThemes": "All",
+    "regionalNote": "The regional banking layer (COBAC/BEAC) is a working scaffold, not a certified mapping. Validate each control against the current official circulars with a qualified compliance specialist before relying on it for supervisory reporting.",
+    "themes": {
+      "organizational": "Organizational",
+      "people": "People",
+      "physical": "Physical",
+      "technological": "Technological",
+      "regional": "Regional banking"
+    },
+    "maturity": "Maturity",
+    "owner": "Owner",
+    "ownerPh": "e.g. CISO, IT Manager",
+    "evidence": "Evidence / notes",
+    "evidencePh": "Reference the control, policy, or artefact that demonstrates this...",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "maturityLabels": {
+      "not_implemented": "Not implemented",
+      "partial": "Partially implemented",
+      "implemented": "Implemented",
+      "optimized": "Optimized / continuously improved",
+      "not_applicable": "Not applicable"
+    },
+    "maturityShort": {
+      "not_implemented": "Not implemented",
+      "partial": "Partial",
+      "implemented": "Implemented",
+      "optimized": "Optimized",
+      "not_applicable": "N/A"
     }
   }
 }

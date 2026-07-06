@@ -81,6 +81,16 @@ export async function createSqliteStore(config, log) {
       updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
       resolved_at TEXT
     );
+    CREATE TABLE IF NOT EXISTS compliance_status (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      control_id TEXT NOT NULL,
+      maturity TEXT NOT NULL DEFAULT 'not_implemented',
+      evidence TEXT NOT NULL DEFAULT '',
+      owner TEXT NOT NULL DEFAULT '',
+      updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      UNIQUE(client_id, control_id)
+    );
     CREATE TABLE IF NOT EXISTS assessments (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT DEFAULT '', organization TEXT DEFAULT '', email TEXT DEFAULT '',
@@ -143,6 +153,10 @@ export async function createSqliteStore(config, log) {
     delFind: db.prepare('DELETE FROM findings WHERE id=?'),
     findById: db.prepare('SELECT * FROM findings WHERE id=?'),
     findsByEng: db.prepare(`SELECT * FROM findings WHERE engagement_id=? ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END, id`),
+    listCompliance: db.prepare('SELECT control_id, maturity, evidence, owner, updated_at FROM compliance_status WHERE client_id=?'),
+    upsertCompliance: db.prepare(`INSERT INTO compliance_status (client_id,control_id,maturity,evidence,owner) VALUES (?,?,?,?,?)
+      ON CONFLICT(client_id,control_id) DO UPDATE SET maturity=excluded.maturity, evidence=excluded.evidence, owner=excluded.owner, updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now')`),
+    countComplianceClients: db.prepare('SELECT COUNT(DISTINCT client_id) n FROM compliance_status'),
     insertAssessment: db.prepare(`INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES (?,?,?,?,?,?,?,?)`),
     listAssessments: db.prepare(`SELECT id,name,organization,email,domain_scores,total_score,grade,locale,created_at FROM assessments ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`),
     countAssessments: db.prepare('SELECT COUNT(*) n FROM assessments'),
@@ -165,6 +179,7 @@ export async function createSqliteStore(config, log) {
     async setSubmissionHandled(id, h) { return q.setHandled.run(h?1:0,h?1:0,id).changes > 0; },
     async deleteSubmission(id) { return q.delSub.run(id).changes > 0; },
     // admin
+    async countAdmins() { return q.adminCount.get().n; },
     async findAdminByEmail(email) { return q.adminByEmail.get(email.toLowerCase()) ?? null; },
     async findAdminById(id) { return q.adminById.get(id) ?? null; },
     async setAdminMfaSecret(id, secret) { return q.setMfaSecret.run(secret, id).changes > 0; },
@@ -209,6 +224,14 @@ export async function createSqliteStore(config, log) {
     async getFinding(id) { return q.findById.get(id) ?? null; },
     async listFindingsByEngagement(engId) { return q.findsByEng.all(engId); },
     // ---- assessments ----
+    async listCompliance(clientId) {
+      const rows = q.listCompliance.all(clientId);
+      return Object.fromEntries(rows.map(r => [r.control_id, r]));
+    },
+    async upsertCompliance(clientId, controlId, d) {
+      q.upsertCompliance.run(clientId, controlId, d.maturity, d.evidence || '', d.owner || '');
+      return true;
+    },
     async createAssessment(a) { return Number(q.insertAssessment.run(a.name,a.organization,a.email,JSON.stringify(a.answers),JSON.stringify(a.domain_scores),a.total_score,a.grade,a.locale).lastInsertRowid); },
     async listAssessments(limit, offset) {
       const items = q.listAssessments.all(limit, offset).map(r => ({ ...r, domain_scores: JSON.parse(r.domain_scores) }));

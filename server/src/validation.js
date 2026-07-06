@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ALL_QUESTION_IDS } from './assessment.js';
+import { CONTROL_IDS as COMPLIANCE_CONTROL_IDS } from './compliance.js';
 
 export const ContactSchema = z.object({
   name: z.string().trim().min(1).max(200),
@@ -74,4 +75,11 @@ export const FindingSchema = z.object({
   description: z.string().max(40000).optional().default(''),
   impact: z.string().max(20000).optional().default(''),
   remediation: z.string().max(20000).optional().default(''),
+});
+
+export const ComplianceStatusSchema = z.object({
+  control_id: z.enum(COMPLIANCE_CONTROL_IDS),
+  maturity: z.enum(['not_implemented', 'partial', 'implemented', 'optimized', 'not_applicable']),
+  evidence: z.string().max(8000).optional().default(''),
+  owner: z.string().max(160).optional().default(''),
 });

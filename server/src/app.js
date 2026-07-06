@@ -44,20 +44,75 @@ export function createApp(store, config, log = console, mailer = null) {
   // ---- API ----
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', driver: store.driver, api: 'v1' }));
 
-  // Secure operator diagnostics: verifies DB + SMTP live. Gated by OPS_KEY so
-  // it is not public. Call with header  x-ops-key: <OPS_KEY>  or ?ops_key=...
+  // Secure operator diagnostics: verifies DB + SMTP live and returns a plain
+  // checklist with the exact remedy for anything failing. Gated by OPS_KEY.
   app.get('/api/ops/diagnostics', async (req, res) => {
     const key = req.get('x-ops-key') || req.query.ops_key;
     if (!config.opsKey || key !== config.opsKey) return res.status(404).json({ error: 'not_found' });
-    const out = { time: new Date().toISOString(), env: config.isProd ? 'production' : 'development' };
-    try { out.database = { driver: store.driver, connected: await store.ping() }; }
-    catch (e) { out.database = { driver: store.driver, connected: false, error: e.message }; }
+    const checks = [];
+
+    // 1. Database
+    let dbOk = false, dbErr = null;
+    try { dbOk = await store.ping(); } catch (e) { dbErr = e.message; }
+    checks.push({
+      key: 'database',
+      ok: dbOk,
+      detail: dbOk ? `Connected (${store.driver}).` : `NOT connected (${store.driver}). ${dbErr || ''}`,
+      remedy: dbOk ? null : (config.isProd
+        ? 'Set DATABASE_URL to your Supabase Session-pooler URI (postgresql://..., port 5432). If it is set but failing on TLS, add PGSSL_NO_VERIFY=1. Then redeploy.'
+        : 'Local SQLite could not open. Check SQLITE_PATH is writable.'),
+    });
+
+    // 2. Production must be Postgres
+    checks.push({
+      key: 'db_driver_for_prod',
+      ok: !config.isProd || store.driver === 'pg',
+      detail: config.isProd ? `Production driver: ${store.driver}` : 'Development (SQLite is fine here).',
+      remedy: (config.isProd && store.driver !== 'pg') ? 'Production is not on PostgreSQL. Set DATABASE_URL and redeploy.' : null,
+    });
+
+    // 3. Email
+    const mail = await mailer.verify();
+    checks.push({
+      key: 'email',
+      ok: mail.ok,
+      detail: mail.ok ? `SMTP verified: ${mail.host}:${mail.port} -> ${mail.to}` : `Email disabled or failing. ${mail.error || ''}`,
+      remedy: mail.ok ? null : 'Set SMTP_HOST=smtp.hostinger.com, SMTP_PORT=465, SMTP_SECURE=1, SMTP_USER=info@skeliontech.com, SMTP_PASS=<mailbox password>, CONTACT_RECIPIENT=info@skeliontech.com. The mailbox must exist in hPanel > Emails. Then redeploy and use "send test email" below.',
+    });
+
+    // 4. Public origin
+    checks.push({
+      key: 'public_origin',
+      ok: Boolean(config.publicOrigin),
+      detail: config.publicOrigin ? `PUBLIC_ORIGIN=${config.publicOrigin}` : 'PUBLIC_ORIGIN not set.',
+      remedy: config.publicOrigin ? null : 'Set PUBLIC_ORIGIN=https://skeliontech.com so canonical URLs and RSS are correct.',
+    });
+
+    // 5. Admin account exists
+    let adminExists = false;
+    try { adminExists = (await store.countAdmins?.()) > 0; } catch { /* older driver */ }
+    checks.push({
+      key: 'admin_account',
+      ok: adminExists,
+      detail: adminExists ? 'At least one admin account exists.' : 'No admin account found.',
+      remedy: adminExists ? null : 'Set ADMIN_EMAIL and ADMIN_PASSWORD env vars and redeploy once to seed your admin login, then remove them.',
+    });
+
+    let counts = { submissions: null, clients: null };
     try {
       const [subs, clients] = await Promise.all([store.stats().catch(() => null), store.listClients().catch(() => null)]);
-      out.data = { submissions: subs?.submissions ?? null, clients: Array.isArray(clients) ? clients.length : null };
+      counts = { submissions: subs?.submissions ?? null, clients: Array.isArray(clients) ? clients.length : null };
     } catch { /* non-fatal */ }
-    out.mail = await mailer.verify();
-    res.json(out);
+
+    const allOk = checks.every((c) => c.ok);
+    res.json({
+      time: new Date().toISOString(),
+      env: config.isProd ? 'production' : 'development',
+      healthy: allOk,
+      summary: allOk ? 'All systems operational.' : 'One or more subsystems need attention. See remedies below.',
+      checks,
+      data: counts,
+    });
   });
 
   // One-click SMTP test from the diagnostics key (sends a real email).

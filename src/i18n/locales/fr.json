@@ -344,7 +344,7 @@
     "sub": "Dites-nous ce que vous protégez et ce qui vous empêche de dormir. Nous répondons par une proposition cadrée et honnête, pas de plaquette commerciale générique.",
     "kPhone": "Téléphone",
     "vPhoneNote": "// disponible sur WhatsApp",
-    "kWeb": "Web",
+    "kWeb": "E-MAIL",
     "kCoverage": "Couverture",
     "vCoverage": "Cameroun · Afrique centrale · À distance dans le monde entier",
     "vCoverageNote": "// intervention sur site & à distance",
@@ -1078,7 +1078,8 @@
       "f_description": "Description (Markdown)",
       "f_impact": "Impact métier (Markdown)",
       "f_remediation": "Remédiation (Markdown)",
-      "noFindings": "aucun constat pour l'instant"
+      "noFindings": "aucun constat pour l'instant",
+      "compliance": "Posture de conformité"
     },
     "tabClients": "Clients",
     "ops": {
@@ -1458,6 +1459,45 @@
       "resolved": "Résolu",
       "accepted_risk": "Risque accepté",
       "closed": "Clôturé"
+    },
+    "tabEngagements": "Missions",
+    "tabCompliance": "Conformité"
+  },
+  "compliance": {
+    "loading": "chargement du programme de conformité...",
+    "overall": "posture globale",
+    "unverified": "non vérifié",
+    "controlsApplicable": "contrôles applicables",
+    "allThemes": "Tous",
+    "regionalNote": "La couche bancaire régionale (COBAC/BEAC) est une trame de travail, pas une correspondance certifiée. Validez chaque contrôle au regard des circulaires officielles en vigueur avec un spécialiste conformité qualifié avant tout usage à des fins de reporting prudentiel.",
+    "themes": {
+      "organizational": "Organisationnel",
+      "people": "Personnes",
+      "physical": "Physique",
+      "technological": "Technologique",
+      "regional": "Bancaire régional"
+    },
+    "maturity": "Maturité",
+    "owner": "Responsable",
+    "ownerPh": "ex. RSSI, Responsable IT",
+    "evidence": "Preuve / notes",
+    "evidencePh": "Référencez le contrôle, la politique ou l'artefact qui le démontre...",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "saved": "Enregistré",
+    "maturityLabels": {
+      "not_implemented": "Non implémenté",
+      "partial": "Partiellement implémenté",
+      "implemented": "Implémenté",
+      "optimized": "Optimisé / amélioré en continu",
+      "not_applicable": "Non applicable"
+    },
+    "maturityShort": {
+      "not_implemented": "Non implémenté",
+      "partial": "Partiel",
+      "implemented": "Implémenté",
+      "optimized": "Optimisé",
+      "not_applicable": "N/A"
     }
   }
 }

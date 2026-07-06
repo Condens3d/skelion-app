@@ -23,7 +23,13 @@ export default function Admin() {
   const { t } = useTranslation();
   useSeo({ title: t('admin.seoTitle'), description: '', path: '/admin', noindex: true });
   const [session, setSession] = useState<{ checking: boolean; email: string | null }>({ checking: true, email: null });
-  useEffect(() => { adminApi.me().then((d) => setSession({ checking: false, email: d?.email ?? null })); }, []);
+  useEffect(() => {
+    let done = false;
+    const settle = (email: string | null) => { if (!done) { done = true; setSession({ checking: false, email }); } };
+    adminApi.me().then((d) => settle(d?.email ?? null)).catch(() => settle(null));
+    const timer = setTimeout(() => settle(null), 6000);
+    return () => clearTimeout(timer);
+  }, []);
   if (session.checking) {
     return (
       <div className="pt-[150px] pb-24 wrap font-mono text-slate text-[.9rem]">

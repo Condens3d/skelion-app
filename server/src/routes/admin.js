@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
+import { FRAMEWORKS, MATURITY, CONTROLS, THEMES, computeScores, LIBRARY_VERSION } from '../compliance.js';
 import { Router } from 'express';
 import { requireAuth } from '../auth.js';
-import { PostSchema, ClientSchema, ClientUserSchema, EngagementSchema, FindingSchema } from '../validation.js';
+import { PostSchema, ClientSchema, ClientUserSchema, EngagementSchema, FindingSchema, ComplianceStatusSchema } from '../validation.js';
 
 /** /api/admin — all endpoints require a valid session. */
 export function adminRouter(store, config, mailer) {
@@ -231,6 +232,23 @@ export function adminRouter(store, config, mailer) {
       const ok = await store.deleteFinding(Number(req.params.id));
       if (!ok) return res.status(404).json({ error: 'not_found' });
       res.json({ ok: true });
+    } catch (e) { next(e); }
+  });
+
+  // Compliance program management for any client.
+  router.get('/clients/:id/compliance', async (req, res, next) => {
+    try {
+      const statuses = await store.listCompliance(Number(req.params.id));
+      res.json({ version: LIBRARY_VERSION, frameworks: FRAMEWORKS, maturity: MATURITY, themes: THEMES, controls: CONTROLS, statuses, scores: computeScores(statuses) });
+    } catch (e) { next(e); }
+  });
+  router.put('/clients/:id/compliance/:controlId', async (req, res, next) => {
+    const parsed = ComplianceStatusSchema.safeParse({ ...req.body, control_id: req.params.controlId });
+    if (!parsed.success) return res.status(400).json({ error: 'validation_failed' });
+    try {
+      await store.upsertCompliance(Number(req.params.id), parsed.data.control_id, parsed.data);
+      const statuses = await store.listCompliance(Number(req.params.id));
+      res.json({ ok: true, scores: computeScores(statuses) });
     } catch (e) { next(e); }
   });
 

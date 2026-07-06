@@ -18,7 +18,7 @@ const JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: 'Skelion Enterprises',
-  url: 'https://skelionenterprises.com',
+  url: 'https://skeliontech.com',
   telephone: '+237694429113',
   description:
     'Full-spectrum cybersecurity: penetration testing and red teaming, GRC and ISO certification support, CISO-as-a-Service, cybersecurity training, software license reselling and physical security devices.',

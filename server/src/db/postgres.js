@@ -77,6 +77,16 @@ export async function createPostgresStore(config, log) {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       resolved_at TIMESTAMPTZ
     );
+    CREATE TABLE IF NOT EXISTS compliance_status (
+      id BIGSERIAL PRIMARY KEY,
+      client_id BIGINT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+      control_id TEXT NOT NULL,
+      maturity TEXT NOT NULL DEFAULT 'not_implemented',
+      evidence TEXT NOT NULL DEFAULT '',
+      owner TEXT NOT NULL DEFAULT '',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE(client_id, control_id)
+    );
     CREATE TABLE IF NOT EXISTS assessments (
       id BIGSERIAL PRIMARY KEY,
       name TEXT NOT NULL DEFAULT '', organization TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '',
@@ -113,6 +123,7 @@ export async function createPostgresStore(config, log) {
       return r.rowCount > 0;
     },
     async deleteSubmission(id) { return (await pool.query('DELETE FROM submissions WHERE id=$1', [id])).rowCount > 0; },
+    async countAdmins() { const r = await pool.query('SELECT COUNT(*)::int AS n FROM admin_users'); return r.rows[0].n; },
     async findAdminByEmail(email) {
       const r = await pool.query('SELECT id,email,password_hash,mfa_secret,mfa_enabled,recovery_codes FROM admin_users WHERE email=$1', [email.toLowerCase()]);
       return r.rows[0] ?? null;
@@ -222,6 +233,16 @@ export async function createPostgresStore(config, log) {
       return (await pool.query(`SELECT * FROM findings WHERE engagement_id=$1 ORDER BY CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END, id`, [engId])).rows;
     },
     // ---- assessments ----
+    async listCompliance(clientId) {
+      const r = await pool.query('SELECT control_id, maturity, evidence, owner, updated_at FROM compliance_status WHERE client_id=$1', [clientId]);
+      return Object.fromEntries(r.rows.map(row => [row.control_id, row]));
+    },
+    async upsertCompliance(clientId, controlId, d) {
+      await pool.query(`INSERT INTO compliance_status (client_id,control_id,maturity,evidence,owner) VALUES ($1,$2,$3,$4,$5)
+        ON CONFLICT (client_id,control_id) DO UPDATE SET maturity=EXCLUDED.maturity, evidence=EXCLUDED.evidence, owner=EXCLUDED.owner, updated_at=now()`,
+        [clientId, controlId, d.maturity, d.evidence || '', d.owner || '']);
+      return true;
+    },
     async createAssessment(a) {
       const r = await pool.query(
         `INSERT INTO assessments (name,organization,email,answers,domain_scores,total_score,grade,locale) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,

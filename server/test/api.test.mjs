@@ -370,3 +370,57 @@ test('mfa: disable requires a valid code and restores single-factor login', asyn
   const l = await request(app).post('/api/auth/login').send({ email: 'mfa-admin@skelion.com', password: 'strong-admin-pass-1' });
   assert.equal(l.body.ok, true); // straight to session again
 });
+// ---- Compliance posture mapping ----
+test('compliance: tenant reads library + updates control, scores roll up cross-framework', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const c = await request(app).post('/api/admin/clients').set('Cookie', admin).send({ name: 'Bank Demo' });
+  await request(app).post('/api/admin/client-users').set('Cookie', admin)
+    .send({ client_id: c.body.id, email: 'grc@bank.com', name: 'GRC Lead', password: 'grc-portal-pass-1' });
+  const ck = (await request(app).post('/api/portal/login').send({ email: 'grc@bank.com', password: 'grc-portal-pass-1' })).headers['set-cookie'];
+
+  const lib = await request(app).get('/api/portal/compliance').set('Cookie', ck);
+  assert.equal(lib.status, 200);
+  assert.ok(lib.body.controls.length >= 20);
+  assert.equal(lib.body.frameworks.cobac.verified, false, 'regional framework flagged unverified');
+  assert.equal(lib.body.scores.overall, 0);
+
+  const upd = await request(app).put('/api/portal/compliance/tec-mfa').set('Cookie', ck)
+    .send({ maturity: 'optimized', evidence: 'MFA enforced org-wide', owner: 'CISO' });
+  assert.equal(upd.status, 200);
+  assert.ok(upd.body.scores.byFramework.iso27001.pct > 0);
+  assert.ok(upd.body.scores.byFramework.nistcsf.pct > 0, 'answering one control rolls into multiple frameworks');
+});
+
+test('compliance: not_applicable excluded from denominator', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const c = await request(app).post('/api/admin/clients').set('Cookie', admin).send({ name: 'NA Test' });
+  await request(app).put(`/api/admin/clients/${c.body.id}/compliance/phy-perimeter`).set('Cookie', admin)
+    .send({ maturity: 'not_applicable' });
+  const r = await request(app).get(`/api/admin/clients/${c.body.id}/compliance`).set('Cookie', admin);
+  const phys = r.body.scores.byTheme.physical;
+  assert.equal(phys.applicable < phys.controls, true, 'NA control not counted as applicable');
+});
+
+test('compliance: tenant isolation on compliance data', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const a = await request(app).post('/api/admin/clients').set('Cookie', admin).send({ name: 'Org A' });
+  const b = await request(app).post('/api/admin/clients').set('Cookie', admin).send({ name: 'Org B' });
+  await request(app).post('/api/admin/client-users').set('Cookie', admin).send({ client_id: a.body.id, email: 'a@a.com', name: 'A', password: 'org-a-portal-pass1' });
+  await request(app).put(`/api/admin/clients/${b.body.id}/compliance/tec-mfa`).set('Cookie', admin).send({ maturity: 'optimized' });
+  const ck = (await request(app).post('/api/portal/login').send({ email: 'a@a.com', password: 'org-a-portal-pass1' })).headers['set-cookie'];
+  const r = await request(app).get('/api/portal/compliance').set('Cookie', ck);
+  assert.equal(Object.keys(r.body.statuses).length, 0, 'Org A sees none of Org B compliance data');
+});
+
+test('compliance: rejects unknown control id and bad maturity', async (t) => {
+  const { app, store, cleanup } = await boot(); t.after(cleanup);
+  const admin = await login(app, store);
+  const c = await request(app).post('/api/admin/clients').set('Cookie', admin).send({ name: 'Val Test' });
+  const bad1 = await request(app).put(`/api/admin/clients/${c.body.id}/compliance/not-a-control`).set('Cookie', admin).send({ maturity: 'implemented' });
+  assert.equal(bad1.status, 400);
+  const bad2 = await request(app).put(`/api/admin/clients/${c.body.id}/compliance/tec-mfa`).set('Cookie', admin).send({ maturity: 'super' });
+  assert.equal(bad2.status, 400);
+});

@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSeo } from '../lib/seo';
-import { portalApi, PortalEngagement, Finding, ApiError } from '../lib/api';
+import { portalApi, complianceApi, PortalEngagement, Finding, ApiError } from '../lib/api';
+import ComplianceDashboard from '../components/ComplianceDashboard';
 import { renderMarkdown } from '../lib/mdRender';
 import PageHeader from '../components/pages/PageHeader';
 
@@ -27,7 +28,15 @@ export default function Portal() {
   useSeo({ title: t('portal.seoTitle'), description: t('portal.seoDesc'), path: '/portal', noindex: true });
 
   const [me, setMe] = useState<{ email: string; name: string } | null | undefined>(undefined);
-  useEffect(() => { portalApi.me().then(setMe); }, []);
+  useEffect(() => {
+    // If the backend is unreachable, resolve to "logged out" rather than hanging
+    // on the loading screen forever. A hard timeout guarantees the UI proceeds.
+    let done = false;
+    const settle = (v: { email: string; name: string } | null) => { if (!done) { done = true; setMe(v); } };
+    portalApi.me().then((v) => settle(v)).catch(() => settle(null));
+    const timer = setTimeout(() => settle(null), 6000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (me === undefined) return <div className="max-w-[880px] mx-auto px-7 py-24 font-mono text-paper-dim">{t('portal.loading')}</div>;
   return me ? <Workspace me={me} onLogout={() => setMe(null)} /> : <Login onIn={setMe} />;
@@ -78,6 +87,7 @@ function Workspace({ me, onLogout }: { me: { email: string; name: string }; onLo
   const [engs, setEngs] = useState<PortalEngagement[] | null>(null);
   const [open, setOpen] = useState<number | null>(null);
   const [pwOpen, setPwOpen] = useState(false);
+  const [view, setView] = useState<'engagements' | 'compliance'>('engagements');
   useEffect(() => { portalApi.engagements().then((r) => setEngs(r.items)).catch(() => setEngs([])); }, []);
   async function logout() { await portalApi.logout(); onLogout(); }
 
@@ -97,6 +107,16 @@ function Workspace({ me, onLogout }: { me: { email: string; name: string }; onLo
 
         {pwOpen && <PasswordForm onDone={() => setPwOpen(false)} />}
 
+        <div className="flex gap-2 mb-7 font-mono text-[.8rem]">
+          <button onClick={() => setView('engagements')} className={`px-4 py-2 rounded-brand ${view === 'engagements' ? 'bg-cyan text-ink' : 'neu-inset text-paper-dim hover:text-cyan'}`}>{t('portal.tabEngagements')}</button>
+          <button onClick={() => setView('compliance')} className={`px-4 py-2 rounded-brand ${view === 'compliance' ? 'bg-cyan text-ink' : 'neu-inset text-paper-dim hover:text-cyan'}`}>{t('portal.tabCompliance')}</button>
+        </div>
+
+        {view === 'compliance' && (
+          <ComplianceDashboard load={complianceApi.get} save={complianceApi.update} editable />
+        )}
+
+        {view === 'engagements' && <>
         {engs === null && <p className="font-mono text-paper-dim">{t('portal.loading')}</p>}
         {engs?.length === 0 && (
           <div className="neu neu-inset rounded-panel p-9 text-center text-paper-dim">{t('portal.noEngagements')}</div>
@@ -125,6 +145,7 @@ function Workspace({ me, onLogout }: { me: { email: string; name: string }; onLo
             </div>
           ))}
         </div>
+        </>}
       </section>
     </>
   );
