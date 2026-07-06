@@ -13,7 +13,8 @@
     "test:api": "npm --prefix server test",
     "test:e2e": "playwright test",
     "test": "npm run test:api",
-    "start:full": "npm run build && node server/src/index.js"
+    "start:full": "npm run build && node server/src/index.js",
+    "postinstall": "npm --prefix server install && npm run build"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",
@@ -37,5 +38,8 @@
   "devDependencies": {
     "@playwright/test": "^1.61.1"
   },
-  "main": "server/src/index.js"
+  "main": "server/src/index.js",
+  "engines": {
+    "node": ">=22"
+  }
 }
