@@ -2,7 +2,8 @@ import express from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { existsSync } from 'node:fs';
-import { resolve, extname } from 'node:path';
+import { resolve, extname, dirname, isAbsolute } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { contactRouter } from './routes/contact.js';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
@@ -167,7 +168,12 @@ export function createApp(store, config, log = console, mailer = null, opts = {}
   });
 
   // ---- static SPA + prerendered routes ----
-  const dist = resolve(config.distPath);
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const projectRoot = resolve(__dirname, '..', '..'); // server/src -> project root
+  const dist = isAbsolute(config.distPath)
+    ? config.distPath
+    : resolve(projectRoot, config.distPath.replace(/^\.\.\//, '').replace(/^\.\//, ''));
+  log.info?.(`[static] serving front-end from ${dist} (exists: ${existsSync(dist)})`);
   if (existsSync(dist)) {
     app.use(express.static(dist, {
       index: 'index.html', redirect: false,
